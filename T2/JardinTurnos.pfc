@@ -1,0 +1,35 @@
+program JardinTurnos;
+var total: integer;
+	turno1: boolean;
+	
+process P1;
+var i : integer;
+begin
+	for i:= 1 to 20 do
+	begin
+		while NOT turno1 do;
+		total:= total+1;
+		turno1 := false;
+	end;
+end;
+		
+process P2;
+var i : integer;
+begin
+	for i:=1 to 20 do
+	begin
+		while turno1 do;
+		total:= total +1;
+		turno1 := true;
+	end;	
+end;
+		
+begin
+	total:=0;
+	turno1 := true;
+	cobegin
+		p1;
+		p2;
+	coend;
+	writeln(total);
+end.
