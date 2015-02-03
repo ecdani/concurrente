@@ -16,14 +16,17 @@ Compiler listing
     9    11 
    10    11 var T1,T2:Ttorno;
    11    11 var i:integer;
-   12    11 begin
-   13    11   ocupacion:= 0;
-   14    14   cobegin
-   15    15    T1(1);
-   16    20    T2(2);
-   17    25   coend;
-   18    26   write(ocupacion);
-   19    28 end.
+   12    11 var p:array [1..10] of Ttorno;
+   13    11 begin
+   14    11   ocupacion:= 0;
+   15    14   cobegin
+   16    15    for i:= 1 to 10 do 
+   17    19     p[i](0);
+   18    27    (*T1(1);*)
+   19    27    (*T2(2);*)
+   20    27   coend;
+   21    28   write(ocupacion);
+   22    30 end.
 
 
 
@@ -40,6 +43,7 @@ Symbol table
  51 t1           48     variable    process         3      True    1    6    0
  52 t2           51     variable    process         3      True    1    7    0
  53 i            52     variable    integer         0      True    1    8    0
+ 54 p            53     variable    array           1      True    1    9    0
 
 Generated P-code
 
@@ -54,21 +58,23 @@ Generated P-code
     8     store.i      0         0          ;7
     9     for2u.i      0         4          ;7
    10     rproc        1         0          ;7
-   11     ldadr        1         5          ;12
-   12     ldcon.i      0         0          ;13
-   13     store.i      0         0          ;13
-   14     cobeg        0         0          ;13
-   15     mkstk        1        48          ;14
-   16     ldadr        1         6          ;14
-   17     procv        0         0          ;14
-   18     ldcon.i      0         1          ;15
-   19     calls        1         5          ;15
-   20     mkstk        1        48          ;15
-   21     ldadr        1         7          ;15
-   22     procv        0         0          ;15
-   23     ldcon.i      0         2          ;16
-   24     calls        1         5          ;16
-   25     coend        0         0          ;16
-   26     ldval.i      1         5          ;18
-   27     wrval.i      0         0          ;18
-   28     stopx        0         0          ;18
+   11     ldadr        1         5          ;13
+   12     ldcon.i      0         0          ;14
+   13     store.i      0         0          ;14
+   14     cobeg        0         0          ;14
+   15     ldadr        1         8          ;15
+   16     ldcon.i      0         1          ;16
+   17     ldcon.i      0        10          ;16
+   18     for1u.i      0        27          ;16
+   19     mkstk        1        48          ;16
+   20     ldadr        1         9          ;16
+   21     ldval.i      1         8          ;17
+   22     ixary.i      0         1          ;17
+   23     procv        0         0          ;17
+   24     ldcon.i      0         0          ;17
+   25     calls        1         5          ;17
+   26     for2u.i      0        19          ;17
+   27     coend        0         0          ;17
+   28     ldval.i      1         5          ;21
+   29     wrval.i      0         0          ;21
+   30     stopx        0         0          ;21

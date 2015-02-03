@@ -9,11 +9,14 @@ process type Ttorno(id:integer);
 
 var T1,T2:Ttorno;
 var i:integer;
+var p:array [1..10] of Ttorno;
 begin
 		ocupacion:= 0;
 		cobegin
-			T1(1);
-			T2(2);
+			for i:= 1 to 10 do 
+				p[i](0);
+			(*T1(1);*)
+			(*T2(2);*)
 		coend;
 		write(ocupacion);
 end.
