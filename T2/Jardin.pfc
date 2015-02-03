@@ -1,0 +1,19 @@
+program Jardin;
+var ocupacion:integer;
+process type Ttorno(id:integer);
+	var i:integer;
+	begin
+		for i:=1 to 20 do
+			ocupacion:= ocupacion+1;
+	end;
+
+var T1,T2:Ttorno;
+var i:integer;
+begin
+		ocupacion:= 0;
+		cobegin
+			T1(1);
+			T2(2);
+		coend;
+		write(ocupacion);
+end.
