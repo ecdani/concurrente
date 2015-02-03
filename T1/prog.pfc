@@ -1,0 +1,14 @@
+program prog1;
+
+process type Tp(i:integer);
+begin
+	writeLn(i);
+end;
+var
+	P1,P2:Tp;
+begin
+	cobegin
+		P1(1);
+		P2(2);
+	coend;
+end.

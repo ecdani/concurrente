@@ -1,0 +1,20 @@
+program prog2;(*IncDec*)
+process type inc (var x:integer);
+	begin
+		x:= x+1;
+	end;
+process type dec (var x:integer);
+	begin
+		x:= x-1;
+	end;
+var
+	x:integer;
+	pInc:inc; pDec:dec;
+begin
+	x:=0;
+	cobegin
+		pInc(x);
+		pDec(x);
+	coend;
+	writeLN('El valor de x es ',x);
+end.

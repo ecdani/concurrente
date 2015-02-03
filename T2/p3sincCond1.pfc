@@ -1,0 +1,22 @@
+program p3sincCond1;
+var continuar : boolean;
+process ProcA;
+	begin
+		write('PA1 ');
+		continuar := true;
+		write('PA2 ');
+	end;
+	process ProcB;
+	begin
+		write('PB1 ');
+		while not continuar do;
+		write('PB2 ');
+	end;
+
+begin
+	continuar := false;
+	cobegin
+		procA;
+		procB;
+	coend;
+end.

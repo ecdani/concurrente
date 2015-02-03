@@ -1,0 +1,77 @@
+- Pascal-FC for IBM PC compatibles - 
+- GNU Compiler Version P5.2
+
+G L Davies  &  A Burns, University of York
+
+Compiler listing
+
+    1     0 program p3sincCond1;
+    2     0 var continuar : boolean;
+    3     0 process ProcA;
+    4     0  begin
+    5     0   write('PA1 ');
+    6     2   continuar := true;
+    7     5   write('PA2 ');
+    8     7  end;
+    9     8  process ProcB;
+   10     8  begin
+   11     8   write('PB1 ');
+   12    10   while not continuar do;
+   13    14   write('PB2 ');
+   14    16  end;
+   15    17 
+   16    17 begin
+   17    17  continuar := false;
+   18    20  cobegin
+   19    21   procA;
+   20    25   procB;
+   21    29  coend;
+   22    30 end.
+
+
+
+Symbol table
+
+    name       link      objekt       type         ref      nrm  lev  adr  aux
+
+ 45 _main        44     procedure   notyp           2      True    0   17    0
+ 46 any           0     variable    synch           0      True    1    5    0
+ 47 continuar    46     variable    boolean         0      True    1    5    0
+ 48 proca        47     variable    process         3      True    1    6    0
+ 49 $            48     type id     process         3      True    1    0    0
+ 50 procb        49     variable    process         4      True    1    7    0
+ 51 $            50     type id     process         4      True    1    8    0
+
+Generated P-code
+
+    0     ldcon.i      0         4          ;5
+    1     wrstr        0         0          ;5
+    2     ldadr        1         5          ;5
+    3     ldcon.b      0         1          ;6
+    4     store.b      0         0          ;6
+    5     ldcon.i      0         4          ;7
+    6     wrstr        0         4          ;7
+    7     rproc        1         0          ;7
+    8     ldcon.i      0         4          ;11
+    9     wrstr        0         8          ;11
+   10     ldval.b      1         5          ;12
+   11     notop.b      0         0          ;12
+   12     jmpiz        0        14          ;12
+   13     jmpuc        0        10          ;12
+   14     ldcon.i      0         4          ;13
+   15     wrstr        0        12          ;13
+   16     rproc        1         0          ;13
+   17     ldadr        1         5          ;16
+   18     ldcon.b      0         0          ;17
+   19     store.b      0         0          ;17
+   20     cobeg        0         0          ;17
+   21     mkstk        1        49          ;18
+   22     ldadr        1         6          ;18
+   23     procv        0         0          ;18
+   24     calls        1         4          ;18
+   25     mkstk        1        51          ;19
+   26     ldadr        1         7          ;19
+   27     procv        0         0          ;19
+   28     calls        1         4          ;19
+   29     coend        0         0          ;20
+   30     stopx        0         0          ;21

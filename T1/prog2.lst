@@ -1,0 +1,79 @@
+- Pascal-FC for IBM PC compatibles - 
+- GNU Compiler Version P5.2
+
+G L Davies  &  A Burns, University of York
+
+Compiler listing
+
+    1     0 program prog2;(*IncDec*)
+    2     0 process type inc (var x:integer);
+    3     0  begin
+    4     0   x:= x+1;
+    5     5  end;
+    6     6 process type dec (var x:integer);
+    7     6  begin
+    8     6   x:= x-1;
+    9    11  end;
+   10    12 var
+   11    12  x:integer;
+   12    12  pInc:inc; pDec:dec;
+   13    12 begin
+   14    12  x:=0;
+   15    15  cobegin
+   16    16   pInc(x);
+   17    21   pDec(x);
+   18    26  coend;
+   19    27  writeLN('El valor de x es ',x);
+   20    32 end.
+
+
+
+Symbol table
+
+    name       link      objekt       type         ref      nrm  lev  adr  aux
+
+ 45 _main        44     procedure   notyp           2      True    0   12    0
+ 46 any           0     variable    synch           0      True    1    5    0
+ 47 inc          46     type id     process         3      True    1    0    0
+ 48 x             0     variable    integer         0     False    2    5    0
+ 49 dec          47     type id     process         4      True    1    6    0
+ 50 x             0     variable    integer         0     False    2    5    0
+ 51 x            49     variable    integer         0      True    1    5    0
+ 52 pinc         51     variable    process         3      True    1    6    0
+ 53 pdec         52     variable    process         4      True    1    7    0
+
+Generated P-code
+
+    0     ldval.adr    2         5          ;3
+    1     ldind.i      2         5          ;4
+    2     ldcon.i      0         1          ;4
+    3     addop.i      0         0          ;4
+    4     store.i      0         0          ;4
+    5     rproc        1         0          ;4
+    6     ldval.adr    2         5          ;7
+    7     ldind.i      2         5          ;8
+    8     ldcon.i      0         1          ;8
+    9     subop.i      0         0          ;8
+   10     store.i      0         0          ;8
+   11     rproc        1         0          ;8
+   12     ldadr        1         5          ;13
+   13     ldcon.i      0         0          ;14
+   14     store.i      0         0          ;14
+   15     cobeg        0         0          ;14
+   16     mkstk        1        47          ;15
+   17     ldadr        1         6          ;15
+   18     procv        0         0          ;15
+   19     ldadr        1         5          ;16
+   20     calls        1         5          ;16
+   21     mkstk        1        49          ;16
+   22     ldadr        1         7          ;16
+   23     procv        0         0          ;16
+   24     ldadr        1         5          ;17
+   25     calls        1         5          ;17
+   26     coend        0         0          ;17
+   27     ldcon.i      0        17          ;19
+   28     wrstr        0         0          ;19
+   29     ldval.i      1         5          ;19
+   30     wrval.i      0         0          ;19
+   31     wrlin        0         0          ;19
+   32     stopx        0         0          ;19
