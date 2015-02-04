@@ -1,0 +1,5 @@
+(*Problema del jardin condiserando que los procesos son las personas (20 max)*)
+program ProbJardinPersonas;
+begin
+
+end.
