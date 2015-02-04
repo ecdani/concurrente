@@ -1,0 +1,39 @@
+program jardiNC;
+var total: integer;
+	flag1, flag2:boolean;
+	
+process P1;
+	var i:integer;
+	begin
+		for i:=1 to 20 do
+		begin
+			while flag2 do;
+				flag1:= true;
+				total:=total+1;
+				flag1:= false;
+		end;
+	end;
+		
+process P2;
+	var i:integer;
+	begin
+		for i:=1 to 20 do
+		begin
+			while flag1 do;
+				flag2:=true;
+				total:=total+1;
+				flag2:=false;
+		end;
+	end;
+		(*La ejecución de este programa falla porque 
+		puede ser que ambos pregunten a la vez y por lo tanto ambos entren*)
+
+begin
+	total:= 0;
+	cobegin
+		p1;
+		p2;
+	coend;
+	writeln(total);
+end.
+
