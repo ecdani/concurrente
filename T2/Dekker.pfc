@@ -78,4 +78,4 @@ begin
 	coend;
 	writeln(' ');
 	write(total);
-end.
+end.	

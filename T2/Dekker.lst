@@ -85,7 +85,7 @@ Compiler listing
    78    95  coend;
    79    96  writeln(' ');
    80    99  write(total);
-   81   101 end.
+   81   101 end. 
 
 
 
