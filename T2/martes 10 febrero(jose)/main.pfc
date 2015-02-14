@@ -1,0 +1,26 @@
+program main;
+var
+cont:integer;
+
+process type tProceso(var em:semaphore);
+begin
+	repeat
+	wait(em); (*Semaforo a 1(positivo)=Semaforo en verde*)
+	cont:=cont+1;
+	signal(em);
+	forever
+end;
+
+var 
+mutex:semaphore;
+p1,p2:tProceso;
+
+
+begin
+initial(mutex,1);
+cont:=0;
+cobegin
+p1(mutex);
+p2(mutex);
+coend;
+end.

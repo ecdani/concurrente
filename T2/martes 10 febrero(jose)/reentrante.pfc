@@ -1,0 +1,41 @@
+program segundasolucionSincBar;
+
+const NPR=10;
+var
+sbarrera:semaphore;
+nProcesos:integer;
+mutexNP:semaphore; 
+
+process type tProceso;
+var i:integer;
+begin
+repeat
+write('A');
+wait(mutexNP);
+nProcesos:=nProcesos+1;
+
+if nProcesos = NPR then
+begin
+	for i:=1 to NPR do
+	
+end;
+signal(sbarrera);
+wait(sbarrera);
+write('B');
+forever;
+end;
+
+(*Podemos hacer un write del valor del semaforo*)
+(*write(sbarrera);*)
+var 
+proc:array [1..NPR] of tProceso;
+i:integer;
+begin
+initial(sbarrera,0);
+nProcesos:=0;
+initial(mutexNP,1);
+cobegin
+for i:=1 to NPR do
+	proc[i];
+coend;
+end.

@@ -1,0 +1,115 @@
+- Pascal-FC for IBM PC compatibles - 
+- GNU Compiler Version P5.2
+
+G L Davies  &  A Burns, University of York
+
+Compiler listing
+
+    1     0 program segundasolucionSincBar;
+    2     0 
+    3     0 const NPR=10;
+    4     0 var
+    5     0 sbarrera:semaphore;
+    6     0 nProcesos:integer;
+    7     0 mutexNP:semaphore; 
+    8     0 
+    9     0 process type tProceso;
+   10     0 var i:integer;
+   11     0 begin
+   12     0 write('A');
+   13     2 wait(mutexNP);
+   14     4 nProcesos:=nProcesos+1;
+   15     9 signal(mutexNP);
+   16    11 if nProcesos = NPR then
+   17    15  for i:=1 to NPR do
+   18    19  signal(sbarrera);
+   19    22 wait(sbarrera);
+   20    24 write('B');
+   21    26 end;
+   22    27 
+   23    27 (*Podemos hacer un write del valor del semaforo*)
+   24    27 (*write(sbarrera);*)
+   25    27 var 
+   26    27 proc:array [1..NPR] of tProceso;
+   27    27 i:integer;
+   28    27 begin
+   29    27 initial(sbarrera,0);
+   30    31 nProcesos:=0;
+   31    34 initial(mutexNP,1);
+   32    38 cobegin
+   33    39 for i:=1 to NPR do
+   34    43  proc[i];
+   35    50 coend;
+   36    51 end.
+
+
+
+Symbol table
+
+    name       link      objekt       type         ref      nrm  lev  adr  aux
+
+ 45 _main        44     procedure   notyp           2      True    0   27    0
+ 46 any           0     variable    synch           0      True    1    5    0
+ 47 npr          46     constant    integer         0     False    1   10    0
+ 48 sbarrera     47     variable    semaphore       0      True    1    5    0
+ 49 nprocesos    48     variable    integer         0      True    1    6    0
+ 50 mutexnp      49     variable    semaphore       0      True    1    7    0
+ 51 tproceso     50     type id     process         3      True    1    0    0
+ 52 i             0     variable    integer         0      True    2    5    0
+ 53 proc         51     variable    array           1      True    1    8    0
+ 54 i            53     variable    integer         0      True    1   18    0
+
+Generated P-code
+
+    0     ldcon.c      0        65          ;12
+    1     wrval.c      0         0          ;12
+    2     ldadr        1         7          ;13
+    3     swait        0         0          ;13
+    4     ldadr        1         6          ;13
+    5     ldval.i      1         6          ;14
+    6     ldcon.i      0         1          ;14
+    7     addop.i      0         0          ;14
+    8     store.i      0         0          ;14
+    9     ldadr        1         7          ;15
+   10     signl        0         0          ;15
+   11     ldval.i      1         6          ;16
+   12     ldcon.i      0        10          ;16
+   13     releq.i      0         0          ;16
+   14     jmpiz        0        22          ;16
+   15     ldadr        2         5          ;16
+   16     ldcon.i      0         1          ;17
+   17     ldcon.i      0        10          ;17
+   18     for1u.i      0        22          ;17
+   19     ldadr        1         5          ;18
+   20     signl        0         0          ;18
+   21     for2u.i      0        19          ;18
+   22     ldadr        1         5          ;19
+   23     swait        0         0          ;19
+   24     ldcon.c      0        66          ;20
+   25     wrval.c      0         0          ;20
+   26     rproc        1         0          ;20
+   27     ldadr        1         5          ;29
+   28     ldcon.i      0         0          ;29
+   29     lobnd.i      0         0          ;29
+   30     sinit        0         0          ;29
+   31     ldadr        1         6          ;29
+   32     ldcon.i      0         0          ;30
+   33     store.i      0         0          ;30
+   34     ldadr        1         7          ;31
+   35     ldcon.i      0         1          ;31
+   36     lobnd.i      0         0          ;31
+   37     sinit        0         0          ;31
+   38     cobeg        0         0          ;31
+   39     ldadr        1        18          ;32
+   40     ldcon.i      0         1          ;33
+   41     ldcon.i      0        10          ;33
+   42     for1u.i      0        50          ;33
+   43     mkstk        1        51          ;33
+   44     ldadr        1         8          ;33
+   45     ldval.i      1        18          ;34
+   46     ixary.i      0         1          ;34
+   47     procv        0         0          ;34
+   48     calls        1         4          ;34
+   49     for2u.i      0        43          ;34
+   50     coend        0         0          ;34
+   51     stopx        0         0          ;35

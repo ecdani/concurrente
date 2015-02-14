@@ -1,0 +1,82 @@
+- Pascal-FC for IBM PC compatibles - 
+- GNU Compiler Version P5.2
+
+G L Davies  &  A Burns, University of York
+
+Compiler listing
+
+    1     0 program main;
+    2     0 var
+    3     0 cont:integer;
+    4     0 
+    5     0 process type tProceso(var em:semaphore);
+    6     0 begin
+    7     0  repeat
+    8     0  wait(em); (*Semaforo a 1(positivo)=Semaforo en verde*)
+    9     2  cont:=cont+1;
+   10     7  signal(em);
+   11     9  forever
+   12    10 end;
+   13    11 
+   14    11 var 
+   15    11 mutex:semaphore;
+   16    11 p1,p2:tProceso;
+   17    11 
+   18    11 
+   19    11 begin
+   20    11 initial(mutex,1);
+   21    15 cont:=0;
+   22    18 cobegin
+   23    19 p1(mutex);
+   24    24 p2(mutex);
+   25    29 coend;
+   26    30 end.
+
+
+
+Symbol table
+
+    name       link      objekt       type         ref      nrm  lev  adr  aux
+
+ 45 _main        44     procedure   notyp           2      True    0   11    0
+ 46 any           0     variable    synch           0      True    1    5    0
+ 47 cont         46     variable    integer         0      True    1    5    0
+ 48 tproceso     47     type id     process         3      True    1    0    0
+ 49 em            0     variable    semaphore       0     False    2    5    0
+ 50 mutex        48     variable    semaphore       0      True    1    6    0
+ 51 p1           50     variable    process         3      True    1    7    0
+ 52 p2           51     variable    process         3      True    1    8    0
+
+Generated P-code
+
+    0     ldval.adr    2         5          ;8
+    1     swait        0         0          ;8
+    2     ldadr        1         5          ;8
+    3     ldval.i      1         5          ;9
+    4     ldcon.i      0         1          ;9
+    5     addop.i      0         0          ;9
+    6     store.i      0         0          ;9
+    7     ldval.adr    2         5          ;10
+    8     signl        0         0          ;10
+    9     jmpuc        0         0          ;10
+   10     rproc        1         0          ;11
+   11     ldadr        1         6          ;20
+   12     ldcon.i      0         1          ;20
+   13     lobnd.i      0         0          ;20
+   14     sinit        0         0          ;20
+   15     ldadr        1         5          ;20
+   16     ldcon.i      0         0          ;21
+   17     store.i      0         0          ;21
+   18     cobeg        0         0          ;21
+   19     mkstk        1        48          ;22
+   20     ldadr        1         7          ;22
+   21     procv        0         0          ;22
+   22     ldadr        1         6          ;23
+   23     calls        1         5          ;23
+   24     mkstk        1        48          ;23
+   25     ldadr        1         8          ;23
+   26     procv        0         0          ;23
+   27     ldadr        1         6          ;24
+   28     calls        1         5          ;24
+   29     coend        0         0          ;24
+   30     stopx        0         0          ;25

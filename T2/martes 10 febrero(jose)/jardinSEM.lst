@@ -1,0 +1,90 @@
+- Pascal-FC for IBM PC compatibles - 
+- GNU Compiler Version P5.2
+
+G L Davies  &  A Burns, University of York
+
+Compiler listing
+
+    1     0 program jardinSEM;
+    2     0 
+    3     0 var 
+    4     0 total:integer;
+    5     0 mutex:semaphore;
+    6     0 
+    7     0 process type TProc;
+    8     0 var i :integer;
+    9     0 begin
+   10     0 for i:=1 to 20 do
+   11     4 begin
+   12     4 wait(mutex);
+   13     6 total:=total+1;
+   14    11 signal(mutex);
+   15    13 end;
+   16    14 end;
+   17    15 
+   18    15 
+   19    15 var p1,p2:Tproc;
+   20    15 
+   21    15 begin
+   22    15 total:=0;
+   23    18 initial(mutex,1);
+   24    22 cobegin
+   25    23 p1;
+   26    27 p2;
+   27    31 coend;
+   28    32 writeln(total);
+   29    35 end.
+
+
+
+Symbol table
+
+    name       link      objekt       type         ref      nrm  lev  adr  aux
+
+ 45 _main        44     procedure   notyp           2      True    0   15    0
+ 46 any           0     variable    synch           0      True    1    5    0
+ 47 total        46     variable    integer         0      True    1    5    0
+ 48 mutex        47     variable    semaphore       0      True    1    6    0
+ 49 tproc        48     type id     process         3      True    1    0    0
+ 50 i             0     variable    integer         0      True    2    5    0
+ 51 p1           49     variable    process         3      True    1    7    0
+ 52 p2           51     variable    process         3      True    1    8    0
+
+Generated P-code
+
+    0     ldadr        2         5          ;9
+    1     ldcon.i      0         1          ;10
+    2     ldcon.i      0        20          ;10
+    3     for1u.i      0        14          ;10
+    4     ldadr        1         6          ;12
+    5     swait        0         0          ;12
+    6     ldadr        1         5          ;12
+    7     ldval.i      1         5          ;13
+    8     ldcon.i      0         1          ;13
+    9     addop.i      0         0          ;13
+   10     store.i      0         0          ;13
+   11     ldadr        1         6          ;14
+   12     signl        0         0          ;14
+   13     for2u.i      0         4          ;14
+   14     rproc        1         0          ;15
+   15     ldadr        1         5          ;21
+   16     ldcon.i      0         0          ;22
+   17     store.i      0         0          ;22
+   18     ldadr        1         6          ;23
+   19     ldcon.i      0         1          ;23
+   20     lobnd.i      0         0          ;23
+   21     sinit        0         0          ;23
+   22     cobeg        0         0          ;23
+   23     mkstk        1        49          ;24
+   24     ldadr        1         7          ;24
+   25     procv        0         0          ;24
+   26     calls        1         4          ;24
+   27     mkstk        1        49          ;25
+   28     ldadr        1         8          ;25
+   29     procv        0         0          ;25
+   30     calls        1         4          ;25
+   31     coend        0         0          ;26
+   32     ldval.i      1         5          ;28
+   33     wrval.i      0         0          ;28
+   34     wrlin        0         0          ;28
+   35     stopx        0         0          ;28

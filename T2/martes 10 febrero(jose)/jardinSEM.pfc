@@ -1,0 +1,29 @@
+program jardinSEM;
+
+var 
+total:integer;
+mutex:semaphore;
+
+process type TProc;
+var i :integer;
+begin
+for i:=1 to 20 do
+begin
+wait(mutex);
+total:=total+1;
+signal(mutex);
+end;
+end;
+
+
+var p1,p2:Tproc;
+
+begin
+total:=0;
+initial(mutex,1);
+cobegin
+p1;
+p2;
+coend;
+writeln(total);
+end.
