@@ -1,0 +1,204 @@
+- Pascal-FC for IBM PC compatibles - 
+- GNU Compiler Version P5.2
+
+G L Davies  &  A Burns, University of York
+
+Compiler listing
+
+    1     0 program ProductoresConsumidores;
+    2     0 
+    3     0 const MAXDATOS = 10;
+    4     0 
+    5     0 type tbuffer = record
+    6     0  datos: array[1..MAXDATOS] of integer;
+    7     0  posInser,posSacar:Integer;
+    8     0 end;
+    9     0 
+   10     0 procedure inicializar(var buffer:tBuffer);
+   11     0 begin
+   12     0  buffer.posInser:=1;
+   13     4  buffer.posSacar:=1;
+   14     8 end;
+   15     9 
+   16     9 procedure insertar(dato:integer; var buffer:tBuffer);
+   17     9 begin
+   18     9  buffer.datos[buffer.posInser]:= dato;
+   19    16  buffer.posInser := buffer.posInser MOD MAXDATOS +1;
+   20    26 end;
+   21    27 
+   22    27 procedure sacar(var dato:integer; var buffer:tBuffer);
+   23    27 begin
+   24    27  dato:= buffer.datos[buffer.posSacar];
+   25    35  buffer.posSacar := buffer.posSacar MOD MAXDATOS +1;
+   26    45 end;
+   27    46 
+   28    46 process type tProductor(var buffer:tBuffer);
+   29    46 var
+   30    46  dato: integer;
+   31    46 begin
+   32    46  repeat
+   33    46   dato:= random(200);
+   34    50   insertar(dato,buffer);
+   35    55  forever
+   36    56 end;
+   37    57 
+   38    57 process type tConsumidor(var buffer:tBuffer);
+   39    57 var
+   40    57  dato: integer;
+   41    57 begin
+   42    57  repeat
+   43    57   sacar(dato,buffer);
+   44    62   write(dato);
+   45    64   write('-')
+   46    66  forever
+   47    67 end;
+   48    68 
+   49    68 var
+   50    68  buffer:tBuffer;
+   51    68  i:integer;
+   52    68  prod:array[1..5] of tProductor;
+   53    68  cons:array [1..5] of tConsumidor;
+   54    68 begin
+   55    68  inicializar (buffer);
+   56    71  cobegin
+   57    72  for i:=1 to 5 do
+   58    76   prod[i](buffer);
+   59    84   
+   60    84  for i:=1 to 3 do
+   61    88   cons[i](buffer);
+   62    96   
+   63    96  coend;
+   64    97 end.
+
+
+
+Symbol table
+
+    name       link      objekt       type         ref      nrm  lev  adr  aux
+
+ 45 _main        44     procedure   notyp           2      True    0   68    0
+ 46 any           0     variable    synch           0      True    1    5    0
+ 47 maxdatos     46     constant    integer         0     False    1   10    0
+ 48 tbuffer      47     type id     record          3     False    1   12    0
+ 49 datos         0     variable    array           1      True    2    0    0
+ 50 posinser     49     variable    integer         0      True    2   10    0
+ 51 possacar     50     variable    integer         0      True    2   11    0
+ 52 inicializa   48     procedure   notyp           4      True    1    0    0
+ 53 buffer        0     variable    record          3     False    2    5    0
+ 54 insertar     52     procedure   notyp           5      True    1    9    0
+ 55 dato          0     variable    integer         0      True    2    5    0
+ 56 buffer       55     variable    record          3     False    2    6    0
+ 57 sacar        54     procedure   notyp           6      True    1   27    0
+ 58 dato          0     variable    integer         0     False    2    5    0
+ 59 buffer       58     variable    record          3     False    2    6    0
+ 60 tproductor   57     type id     process         7      True    1   46    0
+ 61 buffer        0     variable    record          3     False    2    5    0
+ 62 dato         61     variable    integer         0      True    2    6    0
+ 63 tconsumido   60     type id     process         8      True    1   57    0
+ 64 buffer        0     variable    record          3     False    2    5    0
+ 65 dato         64     variable    integer         0      True    2    6    0
+ 66 buffer       63     variable    record          3      True    1    5    0
+ 67 i            66     variable    integer         0      True    1   17    0
+ 68 prod         67     variable    array           2      True    1   18    0
+ 69 cons         68     variable    array           3      True    1   23    0
+
+Generated P-code
+
+    0     ldval.adr    2         5          ;11
+    1     ixrec        0        10          ;12
+    2     ldcon.i      0         1          ;12
+    3     store.i      0         0          ;12
+    4     ldval.adr    2         5          ;12
+    5     ixrec        0        11          ;13
+    6     ldcon.i      0         1          ;13
+    7     store.i      0         0          ;13
+    8     rproc        0         0          ;13
+    9     ldval.adr    2         6          ;17
+   10     ldval.adr    2         6          ;18
+   11     ixrec        0        10          ;18
+   12     rpadr.i      0         0          ;18
+   13     ixary.i      0         1          ;18
+   14     ldval.i      2         5          ;18
+   15     store.i      0         0          ;18
+   16     ldval.adr    2         6          ;18
+   17     ixrec        0        10          ;19
+   18     ldval.adr    2         6          ;19
+   19     ixrec        0        10          ;19
+   20     rpadr.i      0         0          ;19
+   21     ldcon.i      0        10          ;19
+   22     modop.i      0         0          ;19
+   23     ldcon.i      0         1          ;19
+   24     addop.i      0         0          ;19
+   25     store.i      0         0          ;19
+   26     rproc        0         0          ;19
+   27     ldval.adr    2         5          ;23
+   28     ldval.adr    2         6          ;24
+   29     ldval.adr    2         6          ;24
+   30     ixrec        0        11          ;24
+   31     rpadr.i      0         0          ;24
+   32     ixary.i      0         1          ;24
+   33     rpadr.i      0         0          ;24
+   34     store.i      0         0          ;24
+   35     ldval.adr    2         6          ;24
+   36     ixrec        0        11          ;25
+   37     ldval.adr    2         6          ;25
+   38     ixrec        0        11          ;25
+   39     rpadr.i      0         0          ;25
+   40     ldcon.i      0        10          ;25
+   41     modop.i      0         0          ;25
+   42     ldcon.i      0         1          ;25
+   43     addop.i      0         0          ;25
+   44     store.i      0         0          ;25
+   45     rproc        0         0          ;25
+   46     ldadr        2         6          ;32
+   47     ldcon.i      0       200          ;33
+   48     stfun.i      0        19          ;33
+   49     store.i      0         0          ;33
+   50     mkstk        0        54          ;33
+   51     ldval.i      2         6          ;34
+   52     ldval.adr    2         5          ;34
+   53     calls        0         6          ;34
+   54     updis        1         2          ;34
+   55     jmpuc        0        46          ;34
+   56     rproc        1         0          ;35
+   57     mkstk        0        57          ;42
+   58     ldadr        2         6          ;43
+   59     ldval.adr    2         5          ;43
+   60     calls        0         6          ;43
+   61     updis        1         2          ;43
+   62     ldval.i      2         6          ;44
+   63     wrval.i      0         0          ;44
+   64     ldcon.c      0        45          ;45
+   65     wrval.c      0         0          ;45
+   66     jmpuc        0        57          ;45
+   67     rproc        1         0          ;46
+   68     mkstk        0        52          ;54
+   69     ldadr        1         5          ;55
+   70     calls        0         5          ;55
+   71     cobeg        0         0          ;55
+   72     ldadr        1        17          ;56
+   73     ldcon.i      0         1          ;57
+   74     ldcon.i      0         5          ;57
+   75     for1u.i      0        84          ;57
+   76     mkstk        1        60          ;57
+   77     ldadr        1        18          ;57
+   78     ldval.i      1        17          ;58
+   79     ixary.i      0         2          ;58
+   80     procv        0         0          ;58
+   81     ldadr        1         5          ;58
+   82     calls        1         5          ;58
+   83     for2u.i      0        76          ;58
+   84     ldadr        1        17          ;58
+   85     ldcon.i      0         1          ;60
+   86     ldcon.i      0         3          ;60
+   87     for1u.i      0        96          ;60
+   88     mkstk        1        63          ;60
+   89     ldadr        1        23          ;60
+   90     ldval.i      1        17          ;61
+   91     ixary.i      0         3          ;61
+   92     procv        0         0          ;61
+   93     ldadr        1         5          ;61
+   94     calls        1         5          ;61
+   95     for2u.i      0        88          ;61
+   96     coend        0         0          ;61
+   97     stopx        0         0          ;63

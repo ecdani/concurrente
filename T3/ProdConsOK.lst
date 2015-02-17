@@ -1,0 +1,257 @@
+- Pascal-FC for IBM PC compatibles - 
+- GNU Compiler Version P5.2
+
+G L Davies  &  A Burns, University of York
+
+Compiler listing
+
+    1     0 program ProdConsOK;
+    2     0 
+    3     0 const MAXDATOS = 10;
+    4     0 
+    5     0 type tbuffer = record
+    6     0  datos: array[1..MAXDATOS] of integer;
+    7     0  posInser,posSacar:Integer;
+    8     0  nProductos,nHuecos,em:semaphore;
+    9     0 end;
+   10     0 
+   11     0 procedure inicializar(var buffer:tBuffer);
+   12     0 begin
+   13     0  buffer.posInser := 1;
+   14     4  buffer.posSacar := 1;
+   15     8  initial(buffer.nProductos,0);
+   16    13  initial(buffer.nHuecos,MAXDATOS);
+   17    18  initial(buffer.em,1);
+   18    23 end;
+   19    24 
+   20    24 procedure insertar(dato:integer; var buffer:tBuffer);
+   21    24 begin
+   22    24  wait(buffer.nHuecos);
+   23    27  wait(buffer.em);
+   24    30  buffer.datos[buffer.posInser]:= dato;
+   25    37  buffer.posInser := buffer.posInser MOD MAXDATOS + 1;
+   26    47  signal(buffer.em);
+   27    50  signal(buffer.nProductos);
+   28    53 end;
+   29    54 
+   30    54 procedure sacar(var dato:integer; var buffer:tBuffer);
+   31    54 begin
+   32    54  wait(buffer.nProductos);
+   33    57  wait(buffer.em);
+   34    60  dato := buffer.datos[buffer.posSacar];
+   35    68  buffer.posSacar := buffer.posSacar MOD MAXDATOS + 1;
+   36    78  signal(buffer.em);
+   37    81  signal(buffer.nHuecos);
+   38    84 end;
+   39    85 process type tProductor(var buffer:tBuffer);
+   40    85 var
+   41    85  dato: integer;
+   42    85 begin
+   43    85  repeat
+   44    85   dato:= random(200);
+   45    89   insertar(dato,buffer);
+   46    94  forever
+   47    95 end;
+   48    96 
+   49    96 process type tConsumidor(var buffer:tBuffer);
+   50    96 var
+   51    96  dato: integer;
+   52    96 begin
+   53    96  repeat
+   54    96   sacar(dato,buffer);
+   55   101   write(dato);
+   56   103   write('-')
+   57   105  forever
+   58   106 end;
+   59   107 
+   60   107 var
+   61   107  buffer:tBuffer;
+   62   107  i:integer;
+   63   107  prod:array[1..5] of tProductor;
+   64   107  cons:array [1..5] of tConsumidor;
+   65   107 begin
+   66   107  inicializar (buffer);
+   67   110  cobegin
+   68   111  for i:=1 to 5 do
+   69   115   prod[i](buffer);
+   70   123   
+   71   123  for i:=1 to 3 do
+   72   127   cons[i](buffer);
+   73   135   
+   74   135  coend;
+   75   136 end.
+
+
+
+Symbol table
+
+    name       link      objekt       type         ref      nrm  lev  adr  aux
+
+ 45 _main        44     procedure   notyp           2      True    0  107    0
+ 46 any           0     variable    synch           0      True    1    5    0
+ 47 maxdatos     46     constant    integer         0     False    1   10    0
+ 48 tbuffer      47     type id     record          3     False    1   15    0
+ 49 datos         0     variable    array           1      True    2    0    0
+ 50 posinser     49     variable    integer         0      True    2   10    0
+ 51 possacar     50     variable    integer         0      True    2   11    0
+ 52 nproductos   51     variable    semaphore       0      True    2   12    0
+ 53 nhuecos      52     variable    semaphore       0      True    2   13    0
+ 54 em           53     variable    semaphore       0      True    2   14    0
+ 55 inicializa   48     procedure   notyp           4      True    1    0    0
+ 56 buffer        0     variable    record          3     False    2    5    0
+ 57 insertar     55     procedure   notyp           5      True    1   24    0
+ 58 dato          0     variable    integer         0      True    2    5    0
+ 59 buffer       58     variable    record          3     False    2    6    0
+ 60 sacar        57     procedure   notyp           6      True    1   54    0
+ 61 dato          0     variable    integer         0     False    2    5    0
+ 62 buffer       61     variable    record          3     False    2    6    0
+ 63 tproductor   60     type id     process         7      True    1   85    0
+ 64 buffer        0     variable    record          3     False    2    5    0
+ 65 dato         64     variable    integer         0      True    2    6    0
+ 66 tconsumido   63     type id     process         8      True    1   96    0
+ 67 buffer        0     variable    record          3     False    2    5    0
+ 68 dato         67     variable    integer         0      True    2    6    0
+ 69 buffer       66     variable    record          3      True    1    5    0
+ 70 i            69     variable    integer         0      True    1   20    0
+ 71 prod         70     variable    array           2      True    1   21    0
+ 72 cons         71     variable    array           3      True    1   26    0
+
+Generated P-code
+
+    0     ldval.adr    2         5          ;12
+    1     ixrec        0        10          ;13
+    2     ldcon.i      0         1          ;13
+    3     store.i      0         0          ;13
+    4     ldval.adr    2         5          ;13
+    5     ixrec        0        11          ;14
+    6     ldcon.i      0         1          ;14
+    7     store.i      0         0          ;14
+    8     ldval.adr    2         5          ;15
+    9     ixrec        0        12          ;15
+   10     ldcon.i      0         0          ;15
+   11     lobnd.i      0         0          ;15
+   12     sinit        0         0          ;15
+   13     ldval.adr    2         5          ;16
+   14     ixrec        0        13          ;16
+   15     ldcon.i      0        10          ;16
+   16     lobnd.i      0         0          ;16
+   17     sinit        0         0          ;16
+   18     ldval.adr    2         5          ;17
+   19     ixrec        0        14          ;17
+   20     ldcon.i      0         1          ;17
+   21     lobnd.i      0         0          ;17
+   22     sinit        0         0          ;17
+   23     rproc        0         0          ;17
+   24     ldval.adr    2         6          ;22
+   25     ixrec        0        13          ;22
+   26     swait        0         0          ;22
+   27     ldval.adr    2         6          ;23
+   28     ixrec        0        14          ;23
+   29     swait        0         0          ;23
+   30     ldval.adr    2         6          ;23
+   31     ldval.adr    2         6          ;24
+   32     ixrec        0        10          ;24
+   33     rpadr.i      0         0          ;24
+   34     ixary.i      0         1          ;24
+   35     ldval.i      2         5          ;24
+   36     store.i      0         0          ;24
+   37     ldval.adr    2         6          ;24
+   38     ixrec        0        10          ;25
+   39     ldval.adr    2         6          ;25
+   40     ixrec        0        10          ;25
+   41     rpadr.i      0         0          ;25
+   42     ldcon.i      0        10          ;25
+   43     modop.i      0         0          ;25
+   44     ldcon.i      0         1          ;25
+   45     addop.i      0         0          ;25
+   46     store.i      0         0          ;25
+   47     ldval.adr    2         6          ;26
+   48     ixrec        0        14          ;26
+   49     signl        0         0          ;26
+   50     ldval.adr    2         6          ;27
+   51     ixrec        0        12          ;27
+   52     signl        0         0          ;27
+   53     rproc        0         0          ;27
+   54     ldval.adr    2         6          ;32
+   55     ixrec        0        12          ;32
+   56     swait        0         0          ;32
+   57     ldval.adr    2         6          ;33
+   58     ixrec        0        14          ;33
+   59     swait        0         0          ;33
+   60     ldval.adr    2         5          ;33
+   61     ldval.adr    2         6          ;34
+   62     ldval.adr    2         6          ;34
+   63     ixrec        0        11          ;34
+   64     rpadr.i      0         0          ;34
+   65     ixary.i      0         1          ;34
+   66     rpadr.i      0         0          ;34
+   67     store.i      0         0          ;34
+   68     ldval.adr    2         6          ;34
+   69     ixrec        0        11          ;35
+   70     ldval.adr    2         6          ;35
+   71     ixrec        0        11          ;35
+   72     rpadr.i      0         0          ;35
+   73     ldcon.i      0        10          ;35
+   74     modop.i      0         0          ;35
+   75     ldcon.i      0         1          ;35
+   76     addop.i      0         0          ;35
+   77     store.i      0         0          ;35
+   78     ldval.adr    2         6          ;36
+   79     ixrec        0        14          ;36
+   80     signl        0         0          ;36
+   81     ldval.adr    2         6          ;37
+   82     ixrec        0        13          ;37
+   83     signl        0         0          ;37
+   84     rproc        0         0          ;37
+   85     ldadr        2         6          ;43
+   86     ldcon.i      0       200          ;44
+   87     stfun.i      0        19          ;44
+   88     store.i      0         0          ;44
+   89     mkstk        0        57          ;44
+   90     ldval.i      2         6          ;45
+   91     ldval.adr    2         5          ;45
+   92     calls        0         6          ;45
+   93     updis        1         2          ;45
+   94     jmpuc        0        85          ;45
+   95     rproc        1         0          ;46
+   96     mkstk        0        60          ;53
+   97     ldadr        2         6          ;54
+   98     ldval.adr    2         5          ;54
+   99     calls        0         6          ;54
+  100     updis        1         2          ;54
+  101     ldval.i      2         6          ;55
+  102     wrval.i      0         0          ;55
+  103     ldcon.c      0        45          ;56
+  104     wrval.c      0         0          ;56
+  105     jmpuc        0        96          ;56
+  106     rproc        1         0          ;57
+  107     mkstk        0        55          ;65
+  108     ldadr        1         5          ;66
+  109     calls        0         5          ;66
+  110     cobeg        0         0          ;66
+  111     ldadr        1        20          ;67
+  112     ldcon.i      0         1          ;68
+  113     ldcon.i      0         5          ;68
+  114     for1u.i      0       123          ;68
+  115     mkstk        1        63          ;68
+  116     ldadr        1        21          ;68
+  117     ldval.i      1        20          ;69
+  118     ixary.i      0         2          ;69
+  119     procv        0         0          ;69
+  120     ldadr        1         5          ;69
+  121     calls        1         5          ;69
+  122     for2u.i      0       115          ;69
+  123     ldadr        1        20          ;69
+  124     ldcon.i      0         1          ;71
+  125     ldcon.i      0         3          ;71
+  126     for1u.i      0       135          ;71
+  127     mkstk        1        66          ;71
+  128     ldadr        1        26          ;71
+  129     ldval.i      1        20          ;72
+  130     ixary.i      0         3          ;72
+  131     procv        0         0          ;72
+  132     ldadr        1         5          ;72
+  133     calls        1         5          ;72
+  134     for2u.i      0       127          ;72
+  135     coend        0         0          ;72
+  136     stopx        0         0          ;74

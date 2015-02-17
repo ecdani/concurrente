@@ -1,0 +1,93 @@
+Pascal-FC post-mortem report on prodconsok
+- Interpreter Version P5.3 - 
+Abnormal halt in process prod[1] with pc = 31
+Reason:   statement limit of 200000 reached (possible livelock)
+
+
+----------
+Main program
+
+Status:  awaiting process termination
+
+
+----------
+Process prod[1]
+
+Status:  active
+pc = 31
+
+
+----------
+Process prod[2]
+
+Status:  active
+pc = 27
+
+
+----------
+Process prod[3]
+
+Status:  active
+pc = 27
+
+Process suspended on:
+
+buffer.nhuecos (semaphore)
+
+
+----------
+Process prod[4]
+
+Status:  active
+pc = 27
+
+Process suspended on:
+
+buffer.nhuecos (semaphore)
+
+
+----------
+Process prod[5]
+
+Status:  active
+pc = 27
+
+Process suspended on:
+
+buffer.nhuecos (semaphore)
+
+
+----------
+Process cons[1]
+
+Status:  active
+pc = 60
+
+Process suspended on:
+
+buffer.em (semaphore)
+
+
+----------
+Process cons[2]
+
+Status:  active
+pc = 103
+
+
+----------
+Process cons[3]
+
+Status:  active
+pc = 60
+
+Process suspended on:
+
+buffer.em (semaphore)
+
+
+
+==========
+Global variables
+
+i          = 3

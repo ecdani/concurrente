@@ -1,0 +1,64 @@
+program ProductoresConsumidores;
+
+const MAXDATOS = 10;
+
+type tbuffer = record
+	datos: array[1..MAXDATOS] of integer;
+	posInser,posSacar:Integer;
+end;
+
+procedure inicializar(var buffer:tBuffer);
+begin
+	buffer.posInser:=1;
+	buffer.posSacar:=1;
+end;
+
+procedure insertar(dato:integer; var buffer:tBuffer);
+begin
+	buffer.datos[buffer.posInser]:= dato;
+	buffer.posInser := buffer.posInser MOD MAXDATOS +1;
+end;
+
+procedure sacar(var dato:integer; var buffer:tBuffer);
+begin
+	dato:= buffer.datos[buffer.posSacar];
+	buffer.posSacar := buffer.posSacar MOD MAXDATOS +1;
+end;
+
+process type tProductor(var buffer:tBuffer);
+var
+	dato: integer;
+begin
+	repeat
+		dato:= random(200);
+		insertar(dato,buffer);
+	forever
+end;
+
+process type tConsumidor(var buffer:tBuffer);
+var
+	dato: integer;
+begin
+	repeat
+		sacar(dato,buffer);
+		write(dato);
+		write('-')
+	forever
+end;
+
+var
+	buffer:tBuffer;
+	i:integer;
+	prod:array[1..5] of tProductor;
+	cons:array [1..5] of tConsumidor;
+begin
+	inicializar (buffer);
+	cobegin
+	for i:=1 to 5 do
+		prod[i](buffer);
+		
+	for i:=1 to 3 do
+		cons[i](buffer);
+		
+	coend;
+end.
