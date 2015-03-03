@@ -1,0 +1,49 @@
+program barbero;
+
+const NSILL = 5;
+
+var
+	nclien: integer
+	mutex, pantalla, scliente, sbarbero, spuerta, sadios: semaphore
+
+procedure barbero(dato:integer; var buffer:tBuffer) begin
+	repeat
+		sleep(5);
+		atenderCliente
+		abrirPuerta
+	end;
+end;
+
+procedure cliente(dato:integer; var buffer:tBuffer) begin
+	entraBarberia
+	leCortanElPelo
+	saleBarberia
+end;
+
+procedure AtenderCliente() begin
+	wait(scliente)
+	signal(sbarbero)
+	Pelando(sleep X)
+end;
+
+procedure leCortanPelo() begin
+	wait(scliente)
+	signal(sbarbero)
+	{ Lo están pelando }
+end;	
+
+saleBarberia
+	wait(spuerta)
+
+{ cliente }
+EntraBarberia
+	if(nclien<NSILL+1)then
+		entra
+			Mostrar mensaje
+			nclien:= nclien+1;
+	else
+		se va	
+
+begin
+
+end.

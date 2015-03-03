@@ -1,0 +1,121 @@
+- Pascal-FC for IBM PC compatibles - 
+- GNU Compiler Version P5.2
+
+G L Davies  &  A Burns, University of York
+
+Compiler listing
+
+    1     0 program barbero;
+    2     0 
+    3     0 const NSILL = 5;
+    4     0 
+    5     0 var
+    6     0  nclien: integer
+    7     0  mutex, pantalla, scliente, sbarbero, spuerta, sadios: semaphore
+***********      ^ 9 
+    8     0 
+    9     0 procedure barbero(dato:integer; var buffer:tBuffer) begin
+***********         ^ 9                                      ^ 0    ^28 
+   10     0  repeat
+   11     0   sleep(5);
+   12     2   atenderCliente
+***********                ^ 0 
+   13     2   abrirPuerta
+***********             ^ 9 
+   14     2  end;
+***********    ^16 
+   15     3 end;
+***********   ^28 
+   16     3 
+   17     3 procedure cliente(dato:integer; var buffer:tBuffer) begin
+***********                                                  ^ 0    ^28 
+   18     3  entraBarberia
+***********              ^ 0 
+   19     3  leCortanElPelo
+***********               ^ 9 
+   20     3  saleBarberia
+   21     3 end;
+   22     4 
+   23     4 procedure AtenderCliente() begin
+***********                          ^24   ^28 
+   24     4  wait(scliente)
+   25     6  signal(sbarbero)
+***********       ^ 9 -------
+   26     6  Pelando(sleep X)
+   27     6 end;
+   28     7 
+   29     7 procedure leCortanPelo() begin
+***********                        ^24   ^28 
+   30     7  wait(scliente)
+   31     9  signal(sbarbero)
+***********       ^ 9 -------
+   32     9  { Lo están pelando }
+   33     9 end; 
+   34    10 
+   35    10 saleBarberia
+***********            ^28 
+   36    10  wait(spuerta)
+   37    10 
+   38    10 { cliente }
+   39    10 EntraBarberia
+   40    10  if(nclien<NSILL+1)then
+***********    ^ 9 ----------------
+   41    10   entra
+   42    10    Mostrar mensaje
+   43    10    nclien:= nclien+1;
+   44    10  else
+***********     ^ 9 
+   45    10   se va 
+   46    10 
+   47    10 begin
+***********     ^ 9 
+   48    10 
+   49    10 end.
+***********    ^ 9 
+
+ Error diagnostics
+
+E0 -  undeclared identifier
+E9 -  ';' expected
+E16 -  'until' or 'forever' expected
+E24 -  error in parameter list
+E28 -  unexpected symbol
+FATAL ERROR - program incomplete
+
+
+
+Symbol table
+
+    name       link      objekt       type         ref      nrm  lev  adr  aux
+
+ 45 _main        44     procedure   notyp           2      True    0   10    0
+ 46 any           0     variable    synch           0      True    1    5    0
+ 47 nsill        46     constant    integer         0     False    1    5    0
+ 48 nclien       47     variable    integer         0      True    1    5    0
+ 49 mutex        48     variable    semaphore       0      True    1    6    0
+ 50 pantalla     49     variable    semaphore       0      True    1    7    0
+ 51 scliente     50     variable    semaphore       0      True    1    8    0
+ 52 sbarbero     51     variable    semaphore       0      True    1    9    0
+ 53 spuerta      52     variable    semaphore       0      True    1   10    0
+ 54 sadios       53     variable    semaphore       0      True    1   11    0
+ 55 barbero      54     procedure   notyp           3      True    1    0    0
+ 56 dato          0     variable    integer         0      True    2    5    0
+ 57 buffer       56     variable    integer         0     False    2    6    0
+ 58 cliente      55     procedure   notyp           4      True    1    3    0
+ 59 dato          0     variable    integer         0      True    2    5    0
+ 60 buffer       59     variable    integer         0     False    2    6    0
+ 61 atendercli   58     procedure   notyp           5      True    1    4    0
+ 62 lecortanpe   61     procedure   notyp           6      True    1    7    0
+
+Generated P-code
+
+    0     ldcon.i      0         5          ;11
+    1     sleep        0         0          ;11
+    2     rproc        0         0          ;13
+    3     rproc        0         0          ;20
+    4     ldadr        1         8          ;24
+    5     swait        0         0          ;24
+    6     rproc        0         0          ;26
+    7     ldadr        1         8          ;30
+    8     swait        0         0          ;30
+    9     rproc        0         0          ;31

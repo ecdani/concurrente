@@ -1,0 +1,115 @@
+- Pascal-FC for IBM PC compatibles - 
+- GNU Compiler Version P5.2
+
+G L Davies  &  A Burns, University of York
+
+Compiler listing
+
+    1     0 program graffiti;
+    2     0 
+    3     0 type tbarrios = record
+    4     0  datos: array[1..5] of char;
+    5     0 end;
+    6     0 
+    7     0 var nombres: array [1..] of char;
+***********                        ^28 
+    8     0 
+    9     0 process type grafitero(banda: char;var barrios:tbarrios);
+   10     0 var
+   11     0  i:integer;
+   12     0 begin
+   13     0  for i:=1 to 5 do
+   14     4    barrios.datos[i] := banda;
+   15    10 end;
+   16    11 
+   17    11 var
+   18    11  grafiteros: array [1 .. 3] of grafitero;
+   19    11  barrios: tbarrios;
+   20    11  i: integer;
+   21    11  semaforo: semaphore;
+   22    11 begin
+   23    11  cobegin
+   24    12   x = nombre
+***********   ^ 0 ------
+   25    12   grafiteros[1]('r',barrios);
+   26    12   grafiteros[2]('g',barrios);
+   27    20   grafiteros[3]('b',barrios);
+   28    28   signal(semaforo);
+   29    30  coend;
+   30    31  wait (semaforo);
+   31    33  for i:=1 to 5 do
+   32    37   write(barrios.datos[i]);
+   33    43 
+   34    43 end.
+
+ Error diagnostics
+
+E0 -  undeclared identifier
+E28 -  unexpected symbol
+
+
+
+Symbol table
+
+    name       link      objekt       type         ref      nrm  lev  adr  aux
+
+ 45 _main        44     procedure   notyp           2      True    0   11    0
+ 46 any           0     variable    synch           0      True    1    5    0
+ 47 tbarrios     46     type id     record          3     False    1    5    0
+ 48 datos         0     variable    array           1      True    2    0    0
+ 49 nombres      47     variable    array           2      True    1    5    0
+ 50 grafitero    49     type id     process         4      True    1    0    0
+ 51 banda         0     variable    char            0      True    2    5    0
+ 52 barrios      51     variable    record          3     False    2    6    0
+ 53 i            52     variable    integer         0      True    2    7    0
+ 54 grafiteros   50     variable    array           3      True    1    6    0
+ 55 barrios      54     variable    record          3      True    1    9    0
+ 56 i            55     variable    integer         0      True    1   14    0
+ 57 semaforo     56     variable    semaphore       0      True    1   15    0
+
+Generated P-code
+
+    0     ldadr        2         7          ;12
+    1     ldcon.i      0         1          ;13
+    2     ldcon.i      0         5          ;13
+    3     for1u.i      0        10          ;13
+    4     ldval.adr    2         6          ;13
+    5     ldval.i      2         7          ;14
+    6     ixary.i      0         1          ;14
+    7     ldval.c      2         5          ;14
+    8     store.c      0         0          ;14
+    9     for2u.i      0         4          ;14
+   10     rproc        1         0          ;14
+   11     cobeg        0         0          ;21
+   12     mkstk        1        50          ;25
+   13     ldadr        1         6          ;25
+   14     ldcon.i      0         2          ;26
+   15     ixary.i      0         3          ;26
+   16     procv        0         0          ;26
+   17     ldcon.c      0       103          ;26
+   18     ldadr        1         9          ;26
+   19     calls        1         6          ;26
+   20     mkstk        1        50          ;26
+   21     ldadr        1         6          ;26
+   22     ldcon.i      0         3          ;27
+   23     ixary.i      0         3          ;27
+   24     procv        0         0          ;27
+   25     ldcon.c      0        98          ;27
+   26     ldadr        1         9          ;27
+   27     calls        1         6          ;27
+   28     ldadr        1        15          ;28
+   29     signl        0         0          ;28
+   30     coend        0         0          ;28
+   31     ldadr        1        15          ;30
+   32     swait        0         0          ;30
+   33     ldadr        1        14          ;30
+   34     ldcon.i      0         1          ;31
+   35     ldcon.i      0         5          ;31
+   36     for1u.i      0        43          ;31
+   37     ldadr        1         9          ;32
+   38     ldval.i      1        14          ;32
+   39     ixary.i      0         1          ;32
+   40     rpadr.c      0         0          ;32
+   41     wrval.c      0         0          ;32
+   42     for2u.i      0        37          ;32
+   43     stopx        0         0          ;32

@@ -1,0 +1,34 @@
+program graffiti;
+
+type tbarrios = record
+	datos: array[1..5] of char;
+end;
+
+var nombres: array [1..] of char;
+
+process type grafitero(banda: char;var barrios:tbarrios);
+var
+	i:integer;
+begin
+	for i:=1 to 5 do
+			barrios.datos[i] := banda;
+end;
+
+var
+	grafiteros: array [1 .. 3] of grafitero;
+	barrios: tbarrios;
+	i: integer;
+	semaforo: semaphore;
+begin
+	cobegin
+		x = nombre
+		grafiteros[1]('r',barrios);
+		grafiteros[2]('g',barrios);
+		grafiteros[3]('b',barrios);
+		signal(semaforo);
+	coend;
+	wait (semaforo);
+	for i:=1 to 5 do
+		write(barrios.datos[i]);
+
+end.
