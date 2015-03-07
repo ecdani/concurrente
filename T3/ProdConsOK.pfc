@@ -73,3 +73,48 @@ begin
 		
 	coend;
 end.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+procedure entraRojo(id: integer);
+	begin
+		wait(pantalla);
+		writeln('Coche Rojo ',id,' entra');
+		{signal(pantalla);}
+	end;
+ 
+procedure saleRojo(id: integer);
+	begin
+		wait(pantalla);
+		writeln('Coche Rojo ',id,' sale');
+		{signal(pantalla);}
+	end;
+ 
+ {Simétrico para los coches Azules}
+
+procedure entraAzul(id: integer);
+	begin
+		wait(pantalla);
+		writeln('                    ','Coche Azul ',id,' entra');
+		{signal(pantalla);}
+	end;
+
+procedure saleAzul(id: integer);
+	begin
+		{wait(pantalla);}
+		writeln('                    ','Coche Azul ',id,' sale');
+		signal(pantalla);
+	end;}

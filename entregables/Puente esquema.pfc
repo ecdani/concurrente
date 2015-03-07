@@ -1,0 +1,88 @@
+program puente1;
+
+var
+	pantallaA,pantallaR,io: semaphore;
+	coches: integer;
+    
+process type TcocheAzul(id: integer);
+	begin
+		sleep(Random(id));
+		
+		wait(pantallaA);
+		wait(io); { Leer/escribir el nº coches }
+		
+		coches := coches + 1;
+		writeln('                  Coche Azul ',id,' entra : coches ',coches);
+		
+		signal(io);
+		signal(pantallaA);
+		
+		sleep(1);
+		
+		wait(io);
+		coches := coches - 1;		
+		writeln('                  Coche Azul ',id,' sale : coches ',coches);
+		signal(io);
+		
+		{Reentrada simulada: ¿Si entro otra vez estoy solo en el tunel?}
+		wait(pantallaA);
+		if (coches = 0) then 
+			begin 
+			signal(pantallaR);
+			end else
+		signal(pantallaA);
+	end;
+   
+process type TcocheRojo(id: integer);
+	begin
+
+		sleep(Random(id));
+		
+		wait(pantallaR);
+		wait(io);
+		
+		coches := coches + 1;
+		writeln('Coche Rojo ',id,' entra : coches ',coches);
+		
+		signal(io);
+		signal(pantallaR);
+
+		sleep(1);
+		
+		wait(io);
+		coches := coches - 1;
+		writeln('Coche Rojo ',id,' sale : coches ',coches);
+		signal(io);
+		
+		{Reentrada simulada: ¿Si entro otra vez estoy solo en el tunel?}
+		wait(pantallaR);
+		if (coches = 0) then 
+			begin 
+			signal(pantallaA);
+			end else
+		signal(pantallaR);
+	end;
+
+var
+	cocheRojo: array[1..10] of TcocheRojo;
+	cocheAzul: array[1..10] of TcocheAzul;
+	i: integer;
+    
+begin
+initial(pantallaR,1);
+initial(pantallaA,0);
+initial(io,1);
+
+coches := 0;
+    cobegin
+		for i:=1 to 10 do
+			begin
+				cocheRojo[i](i);       
+				cocheAzul[i](i);
+			end;
+    coend;
+end.
+
+
+
+
