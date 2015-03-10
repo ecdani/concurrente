@@ -11,8 +11,7 @@ Compiler listing
     4     0  datos: array[1..5] of char;
     5     0 end;
     6     0 
-    7     0 var nombres: array [1..] of char;
-***********                        ^28 
+    7     0 var nombres: array [1..5] of char;
     8     0 
     9     0 process type grafitero(banda: char;var barrios:tbarrios);
    10     0 var
@@ -29,23 +28,17 @@ Compiler listing
    21    11  semaforo: semaphore;
    22    11 begin
    23    11  cobegin
-   24    12   x = nombre
-***********   ^ 0 ------
+   24    12   {var x = nombre}
    25    12   grafiteros[1]('r',barrios);
-   26    12   grafiteros[2]('g',barrios);
-   27    20   grafiteros[3]('b',barrios);
-   28    28   signal(semaforo);
-   29    30  coend;
-   30    31  wait (semaforo);
-   31    33  for i:=1 to 5 do
-   32    37   write(barrios.datos[i]);
-   33    43 
-   34    43 end.
-
- Error diagnostics
-
-E0 -  undeclared identifier
-E28 -  unexpected symbol
+   26    20   grafiteros[2]('g',barrios);
+   27    28   grafiteros[3]('b',barrios);
+   28    36   signal(semaforo);
+   29    38  coend;
+   30    39  wait (semaforo);
+   31    41  for i:=1 to 5 do
+   32    45   write(barrios.datos[i]);
+   33    51 
+   34    51 end.
 
 
 
@@ -62,10 +55,10 @@ Symbol table
  51 banda         0     variable    char            0      True    2    5    0
  52 barrios      51     variable    record          3     False    2    6    0
  53 i            52     variable    integer         0      True    2    7    0
- 54 grafiteros   50     variable    array           3      True    1    6    0
- 55 barrios      54     variable    record          3      True    1    9    0
- 56 i            55     variable    integer         0      True    1   14    0
- 57 semaforo     56     variable    semaphore       0      True    1   15    0
+ 54 grafiteros   50     variable    array           3      True    1   10    0
+ 55 barrios      54     variable    record          3      True    1   13    0
+ 56 i            55     variable    integer         0      True    1   18    0
+ 57 semaforo     56     variable    semaphore       0      True    1   19    0
 
 Generated P-code
 
@@ -81,35 +74,43 @@ Generated P-code
     9     for2u.i      0         4          ;14
    10     rproc        1         0          ;14
    11     cobeg        0         0          ;21
-   12     mkstk        1        50          ;25
-   13     ldadr        1         6          ;25
-   14     ldcon.i      0         2          ;26
-   15     ixary.i      0         3          ;26
-   16     procv        0         0          ;26
-   17     ldcon.c      0       103          ;26
-   18     ldadr        1         9          ;26
-   19     calls        1         6          ;26
-   20     mkstk        1        50          ;26
-   21     ldadr        1         6          ;26
-   22     ldcon.i      0         3          ;27
-   23     ixary.i      0         3          ;27
-   24     procv        0         0          ;27
-   25     ldcon.c      0        98          ;27
-   26     ldadr        1         9          ;27
-   27     calls        1         6          ;27
-   28     ldadr        1        15          ;28
-   29     signl        0         0          ;28
-   30     coend        0         0          ;28
-   31     ldadr        1        15          ;30
-   32     swait        0         0          ;30
-   33     ldadr        1        14          ;30
-   34     ldcon.i      0         1          ;31
-   35     ldcon.i      0         5          ;31
-   36     for1u.i      0        43          ;31
-   37     ldadr        1         9          ;32
-   38     ldval.i      1        14          ;32
-   39     ixary.i      0         1          ;32
-   40     rpadr.c      0         0          ;32
-   41     wrval.c      0         0          ;32
-   42     for2u.i      0        37          ;32
-   43     stopx        0         0          ;32
+   12     mkstk        1        50          ;23
+   13     ldadr        1        10          ;23
+   14     ldcon.i      0         1          ;25
+   15     ixary.i      0         3          ;25
+   16     procv        0         0          ;25
+   17     ldcon.c      0       114          ;25
+   18     ldadr        1        13          ;25
+   19     calls        1         6          ;25
+   20     mkstk        1        50          ;25
+   21     ldadr        1        10          ;25
+   22     ldcon.i      0         2          ;26
+   23     ixary.i      0         3          ;26
+   24     procv        0         0          ;26
+   25     ldcon.c      0       103          ;26
+   26     ldadr        1        13          ;26
+   27     calls        1         6          ;26
+   28     mkstk        1        50          ;26
+   29     ldadr        1        10          ;26
+   30     ldcon.i      0         3          ;27
+   31     ixary.i      0         3          ;27
+   32     procv        0         0          ;27
+   33     ldcon.c      0        98          ;27
+   34     ldadr        1        13          ;27
+   35     calls        1         6          ;27
+   36     ldadr        1        19          ;28
+   37     signl        0         0          ;28
+   38     coend        0         0          ;28
+   39     ldadr        1        19          ;30
+   40     swait        0         0          ;30
+   41     ldadr        1        18          ;30
+   42     ldcon.i      0         1          ;31
+   43     ldcon.i      0         5          ;31
+   44     for1u.i      0        51          ;31
+   45     ldadr        1        13          ;32
+   46     ldval.i      1        18          ;32
+   47     ixary.i      0         1          ;32
+   48     rpadr.c      0         0          ;32
+   49     wrval.c      0         0          ;32
+   50     for2u.i      0        45          ;32
+   51     stopx        0         0          ;32

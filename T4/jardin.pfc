@@ -1,0 +1,20 @@
+{Ejercicio Jardin con RC}
+
+program jardin;
+
+var ocup:integer;
+resource cont:ocup;{Un recurso puede tener asociadas varias variables}
+
+process torno;
+		var i: integer;
+		begin
+			for  i:= 1 to 20 do
+				begin
+				region cont do
+					{ocup++;}
+				end;
+		end;
+	
+	begin
+	
+	end.

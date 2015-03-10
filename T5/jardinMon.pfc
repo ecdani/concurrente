@@ -1,0 +1,44 @@
+program jardinMon;
+
+{ El monitor tndrá un atributo, el contador
+y una serie de procedimientos, asaber:
+- entrada; incrementa la variable compartida
+- muestraOcupacion: indica el numero de gente dentro del jardin
+}
+
+monitor jardinM;
+export entrada,muestra;
+var contador: integer;
+
+procedure entrada;
+	begin
+	contador:= contador +1;
+	end;
+
+procedure muestra;
+begin
+	writeln(contador);
+end;
+
+begin
+contador:= 0;
+end;
+
+process type Ttorno;
+var i: integer;
+begin
+	for i:=1 to 20 do
+		jardinM.entrada;
+end;
+
+var torno1, torno2:Ttorno;
+begin
+	cobegin
+		torno1;
+		torno2;
+	coend;
+	jardinM.muestra;
+end.
+begin
+
+end.

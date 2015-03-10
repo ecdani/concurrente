@@ -4,7 +4,7 @@ type tbarrios = record
 	datos: array[1..5] of char;
 end;
 
-var nombres: array [1..] of char;
+var nombres: array [1..5] of char;
 
 process type grafitero(banda: char;var barrios:tbarrios);
 var
@@ -21,7 +21,7 @@ var
 	semaforo: semaphore;
 begin
 	cobegin
-		x = nombre
+		{var x = nombre}
 		grafiteros[1]('r',barrios);
 		grafiteros[2]('g',barrios);
 		grafiteros[3]('b',barrios);
