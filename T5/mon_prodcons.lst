@@ -1,0 +1,164 @@
+- Pascal-FC for IBM PC compatibles - 
+- GNU Compiler Version P5.2
+
+G L Davies  &  A Burns, University of York
+
+Compiler listing
+
+    1     0 program monProdcons;
+    2     0 
+    3     0 
+    4     0 monitor buffer;
+    5     0  const N=10;
+***********      ^22 
+    6     0  var ocup,frente,cola : integer;
+    7     0  nolleno,novacio: condition;
+    8     0  recurso: array [0..N-1] of item;
+***********                      ^28       ^ 0 
+    9     0  export insertar, extraer;
+***********       ^ 9 ------         ^ 8 
+   10     0  procedure insertar (elemento:item);
+***********                   ^ 1            ^ 0 
+   11     0  begin
+   12     0   if ocup=N then delay(lleno);
+***********                            ^ 0 
+   13     4   recurso[cola]:= elemento;
+   14     9   cola:=(cola+1) mod N;
+   15    16   ocup:=ocup+1;
+   16    21   resume(vacio);
+***********              ^ 0 
+   17    21  end;
+   18    22  procedure extraer (var item: integer);
+***********                  ^ 1 
+   19    22  begin
+   20    22   if ocup=0 then delay(vacio);
+***********                            ^ 0 
+   21    26   item:=recurso[frente];
+   22    31   frente:=(frente+1) mod N;
+   23    38   ocup:=ocup-1;
+   24    43   resume(lleno);
+***********              ^ 0 
+   25    43  end;
+   26    44  begin
+   27    45   frente:=0:
+***********            ^28 
+   28    47   cola:=0;
+***********        ^28 
+   29    50   ocup:=0;
+   30    53  end;
+   31    54 
+   32    54 process type cons(buffer) begin
+***********                         ^ 8   ^28 
+   33    54  buffer.extraer(random());
+***********               ^ 3 --------
+   34    56 end;
+   35    57 
+   36    57 process type prod(buffer) begin
+***********                         ^ 8   ^28 
+   37    57  buffer.insertar(random());
+***********                ^ 3 --------
+   38    59 end;
+   39    60 
+   40    60 begin
+   41    61 var cons: cons;
+***********   ^20 
+ Error diagnostics
+
+E0 -  undeclared identifier
+E1 -  identifier duplicated
+E3 -  type error
+E8 -  ':' expected
+E9 -  ';' expected
+E20 -  'end' expected
+E22 -  'export' expected
+E28 -  unexpected symbol
+
+
+
+Symbol table
+
+    name       link      objekt       type         ref      nrm  lev  adr  aux
+
+ 45 _main        44     procedure   notyp           2      True    0   60    0
+ 46 any           0     variable    synch           0      True    1    5    0
+ 47 buffer       46     variable    monvar          3      True    1    5   44
+ 48 n             0     constant    integer         0     False    2   10    0
+ 49 ocup         48     variable    integer         0      True    1    7    0
+ 50 frente       49     variable    integer         0      True    1    8    0
+ 51 cola         50     variable    integer         0      True    1    9    0
+ 52 nolleno      51     variable    condition       0      True    1   10    0
+ 53 novacio      52     variable    condition       0      True    1   11    0
+ 54 recurso      53     variable    array           1      True    1   12    0
+ 55 insertar     54     variable    notyp           0      True    1   12    0
+ 56 extraer      55     variable    notyp           4      True    1    0    0
+ 57 elemento      0     variable    notyp           5      True    3   22    0
+ 58 item          0     variable    integer         0     False    3    5    0
+ 59 cons         47     type id     process         6      True    1   54    0
+ 60 buffer        0     variable    notyp           0      True    2    5    0
+ 61 prod         59     type id     process         7      True    1   57    0
+ 62 buffer        0     variable    notyp           0      True    2    5    0
+
+Generated P-code
+
+    0     ldval.i      1         7          ;12
+    1     ldcon.i      0        10          ;12
+    2     releq.i      0         0          ;12
+    3     jmpiz        0         4          ;12
+    4     ldadr        1        12          ;12
+    5     ldval.i      1         9          ;13
+    6     ixary.i      0         1          ;13
+    7     ldval        3         5          ;13
+    8     store        0         0          ;13
+    9     ldadr        1         9          ;13
+   10     ldval.i      1         9          ;14
+   11     ldcon.i      0         1          ;14
+   12     addop.i      0         0          ;14
+   13     ldcon.i      0        10          ;14
+   14     modop.i      0         0          ;14
+   15     store.i      0         0          ;14
+   16     ldadr        1         7          ;14
+   17     ldval.i      1         7          ;15
+   18     ldcon.i      0         1          ;15
+   19     addop.i      0         0          ;15
+   20     store.i      0         0          ;15
+   21     rproc        0         0          ;16
+   22     ldval.i      1         7          ;20
+   23     ldcon.i      0         0          ;20
+   24     releq.i      0         0          ;20
+   25     jmpiz        0        26          ;20
+   26     ldval.adr    3         5          ;20
+   27     ldadr        1        12          ;21
+   28     ldval.i      1         8          ;21
+   29     ixary.i      0         1          ;21
+   30     rpadr        0         0          ;21
+   31     ldadr        1         8          ;21
+   32     ldval.i      1         8          ;22
+   33     ldcon.i      0         1          ;22
+   34     addop.i      0         0          ;22
+   35     ldcon.i      0        10          ;22
+   36     modop.i      0         0          ;22
+   37     store.i      0         0          ;22
+   38     ldadr        1         7          ;22
+   39     ldval.i      1         7          ;23
+   40     ldcon.i      0         1          ;23
+   41     subop.i      0         0          ;23
+   42     store.i      0         0          ;23
+   43     rproc        0         0          ;24
+   44     prsel        0         0          ;25
+   45     ldadr        1         8          ;26
+   46     ldcon.i      0         0          ;27
+   47     ldval.i      1         9          ;27
+   48     ldcon.i      0         0          ;28
+   49     store.i      0         0          ;28
+   50     ldadr        1         7          ;28
+   51     ldcon.i      0         0          ;29
+   52     store.i      0         0          ;29
+   53     mretn        0         0          ;29
+   54     ldadr        2         5          ;32
+   55     store        0         0          ;33
+   56     rproc        1         0          ;33
+   57     ldadr        2         5          ;36
+   58     store        0         0          ;37
+   59     rproc        1         0          ;37
+   60     mexec        0        45          ;38
+   61     stopx        0         0          ;38

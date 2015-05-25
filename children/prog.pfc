@@ -1,0 +1,65 @@
+program prog;
+{
+	DadChildren
+	
+	Un padre trabaja en casa y también se encuentra al cuidado
+	de sus hijos.
+	Los hijos continuamente realizan las siguientes tareas.
+	juegan
+	comen
+	duermen
+	Si el niño no encuentra comida avisa al padre. 
+	El niño necesita del padre para levantarse de la siesta
+	
+	El padre se encuentra realizanndo sus tareas (espera pasiva)
+	
+	Y atiende a los niños cuando estos se lo solicitan.
+}
+Procedure Juega
+	begin
+		writeln("Jugando");
+		sleep (Random(5)+2)
+	end
+	
+procedure come
+	begin
+		if porciones > 0
+		begin
+			porciones := porciones-1;
+			write ("niño comiendo, quedan")
+			sleep(2);
+		else
+			begin
+				write("Aviso papa no hay comida");
+				Nocomida := true;
+				resume (trabajar);
+				delay(comida);
+			end
+		end
+
+	rutina Padre
+		repeat
+			delay(trabajar) {trabajando}
+			if NoComida
+				ponComida
+				Avisamos niño -> resume(comida)
+			if despertar
+				Despertamos niño
+		forever
+
+	procedure dormir
+		begin
+			write ('niño durmiendo');
+			sleep(5);
+			despertar := true;
+			resume(trabajar);
+			delay(dormir);
+		end;
+
+begin
+	padre hijo
+	rutina for i:=1 to 20
+		juega
+		come
+		duerme
+end.

@@ -9,19 +9,17 @@ y una serie de procedimientos, asaber:
 monitor jardinM;
 export entrada,muestra;
 var contador: integer;
+	procedure entrada;
+		begin
+		contador:= contador +1;
+		end;
 
-procedure entrada;
-	begin
-	contador:= contador +1;
-	end;
-
-procedure muestra;
+	procedure muestra;
+		begin
+			writeln(contador);
+		end;
 begin
-	writeln(contador);
-end;
-
-begin
-contador:= 0;
+	contador:= 0;
 end;
 
 process type Ttorno;

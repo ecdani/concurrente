@@ -1,0 +1,168 @@
+(*Un ascensor en el que caben 4 personas recoge*)
+(*personas en los diferentes pisos. En estos pisos*)
+(*esperan las personas que quieren subir o bajar a*)
+(*otros pisos*)
+(*El ascensor hace un movimiento continuo*)
+(*recorriendo todos los pisos*)
+(*Programar la situación anterior con*)
+(*monitores*)
+(*(habrá un monitor de control y procesos*)
+(*ascensor y persona).*)
+
+program ascensor;
+
+const PISOS = 6;
+
+monitor ctrl;
+	export llamar, subir, bajar, ir, llevar;
+	const MAXP = 4;
+	var subidos: integer; altura: integer; k: integer; reclamado: integer;
+		move: condition;
+		demandas,llamadas: array[1..PISOS] of integer;
+		montar,desmontar: array [1..PISOS] of condition;
+	
+	procedure llamar(estoy:integer; voy:integer; id:integer);begin
+		writeln('Tipo ',id,' llamando en piso ',estoy,' va a piso ',voy);
+		llamadas[estoy] := 1;
+		reclamado := reclamado +1 ;
+		resume(move);
+		
+	end;
+			
+	procedure subir(estoy:integer; voy:integer; id:integer);begin
+		delay(montar[estoy]);
+		(*writeln('delay(montar[estoy]);');*)
+		(*delay(montar[estoy]);*)
+		
+		writeln('Tipo ',id,' intentando subir');
+		if (subidos < MAXP) then begin
+			subidos := subidos +1;
+			demandas[voy] := 1;
+			writeln('Tipo ',id,' ha subido');
+		end;
+		
+		(*if (subidos = MAXP) or empty(montar[estoy]) then*)
+			resume(move);
+		
+	end;
+	
+	procedure bajar(voy:integer; id:integer);begin
+		delay(desmontar[voy]);
+		writeln('Tipo ',id,' esperando para desmontar');
+		(*delay(desmontar[voy]);*)
+		subidos := subidos - 1;
+		reclamado := reclamado - 1 ;
+		writeln('Tipo ',id,' llegó a piso ',altura);
+		
+		(*if (subidos = 0) or empty(montar[voy]) then*)
+			resume(move);
+	end;
+	
+	procedure ir; 
+		var i,j:integer;
+	begin
+		if (reclamado = 0) then begin
+			writeln('Ascensor parado ');
+			delay(move);
+			writeln('Ascensor activado ');
+		end;
+		for i:= 1 to 6 do begin
+			if not(llamadas[i] = 0) then begin
+				writeln('Ascensor: ',altura,'->',i);
+				altura := i;
+				demandas[altura] := 0;
+				if subidos <> 0 then begin
+					writeln('Permitir salida (hay ',subidos,' subidos)');
+					for j:=0 to subidos do
+						resume(desmontar[altura]);
+					(*delay(move);*)
+				end;
+				(*writeln('Permitir entrada');*)
+				for j:=subidos to MAXP do begin
+					writeln('Permitir entrada ',j);
+					resume(montar[altura]);
+				end;
+				(*writeln('A la espera');
+				if (empty(montar[altura])) then
+					writeln('vacio!!! altura:',altura);*)
+				if (empty(montar[altura])) then
+					llamadas[altura] :=0;
+				(*delay(move);*)
+			end;
+		end;
+	end;
+	
+	procedure llevar; 
+		var i,j:integer;
+	begin
+			if (reclamado = 0) then begin
+				writeln('2Ascensor parado ');
+				delay(move);
+				writeln('2Ascensor activado ');
+			end;
+		for i:= 1 to 6 do begin
+		(*writeln('i: ',i);*)
+
+			if not(demandas[i] = 0) then begin
+				writeln('2Ascensor: ',altura,'->',i);
+				altura := i;
+				demandas[altura] := 0;
+				if subidos <> 0 then begin
+					writeln('Permitir salida (hay ',subidos,' subidos)');
+					for j:=0 to subidos do
+						resume(desmontar[altura]);
+					(*delay(move);*)
+				end;
+				writeln('Permitir entrada');
+				for j:=1 to MAXP do
+					resume(montar[altura]);
+				(*writeln('A la espera');*)
+				(*if (empty(montar[altura])) then*)
+					(*writeln('vacio!!! altura:',altura);*)
+				(*delay(move);*)
+				if (empty(montar[altura])) then
+					llamadas[altura] :=0;
+			end;
+		end;
+	end;
+	
+	begin
+		subidos := 0; altura:=0;
+		for k:=1 to PISOS do begin
+			llamadas[k] := 0; 
+			demandas[k] :=0;
+		end;
+	end;
+
+process type guy(id:integer); 
+	var estoy,voy : integer;
+begin
+	(*while estoy = voy do; begin*)
+	estoy := random(PISOS-1)+1;
+	voy := random(5)+1;
+	(*end;*)
+	ctrl.llamar(estoy,voy,id);
+	
+	ctrl.subir(estoy,voy,id);
+	ctrl.bajar(voy,id);
+end;
+
+process type ascen(id:integer); 
+begin
+	repeat
+		ctrl.ir;
+		ctrl.llevar;
+	forever
+end;
+
+var i:integer;
+guys:array[1..7] of guy;
+ascensor: ascen;
+begin
+	cobegin
+		ascensor(42);
+		(*guys[1](1);*)
+		for i := 1 to 7 do
+			guys[i](i);
+	coend;
+end.

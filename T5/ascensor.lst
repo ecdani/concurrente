@@ -1,0 +1,639 @@
+- Pascal-FC for IBM PC compatibles - 
+- GNU Compiler Version P5.2
+
+G L Davies  &  A Burns, University of York
+
+Compiler listing
+
+    1     0 (*Un ascensor en el que caben 4 personas recoge*)
+    2     0 (*personas en los diferentes pisos. En estos pisos*)
+    3     0 (*esperan las personas que quieren subir o bajar a*)
+    4     0 (*otros pisos*)
+    5     0 (*El ascensor hace un movimiento continuo*)
+    6     0 (*recorriendo todos los pisos*)
+    7     0 (*Programar la situación anterior con*)
+    8     0 (*monitores*)
+    9     0 (*(habrá un monitor de control y procesos*)
+   10     0 (*ascensor y persona).*)
+   11     0 
+   12     0 program ascensor;
+   13     0 
+   14     0 const PISOS = 6;
+   15     0 
+   16     0 monitor ctrl;
+   17     0  export llamar, subir, bajar, ir, llevar, bloquear;
+   18     0  const MAXP = 4;
+   19     0  var subidos, altura, k, reclamado: integer;
+   20     0   move: condition;
+   21     0   llamadas, demandas: array[1..PISOS] of integer;
+   22     0   montar, desmontar: array [1..PISOS] of condition;
+   23     0  
+   24     0  procedure llamar(estoy:integer; voy:integer; id:integer);begin
+   25     0  end;
+   26     1    
+   27     1  procedure subir(estoy:integer; voy:integer; id:integer);begin
+   28     1   writeln('Tipo ',id,' llamando en piso ',estoy,' va a piso ',voy);
+   29    14   llamadas[estoy] := llamadas[estoy] + 1;
+   30    24   reclamado := reclamado +1 ;
+   31    29   resume(move);
+   32    31   delay(montar[estoy]);
+   33    35   
+   34    35   if (subidos < MAXP) then begin
+   35    39    subidos := subidos +1;
+   36    44    demandas[voy] := 1;
+   37    49    writeln('Tipo ',id,' ha subido en piso ',estoy,', va ', voy);
+   38    62   end;
+   39    62   (*if empty(montar[estoy]) then
+   40    62    resume(move);*)
+   41    62   delay(desmontar[voy]);
+   42    66 
+   43    66   subidos := subidos - 1;
+   44    71   reclamado := reclamado - 1 ;
+   45    76   writeln('Tipo ',id,' llegó a piso ',altura,', iba al ',voy);
+   46    89   
+   47    89   (*if (subidos = 0) or empty(montar[voy]) then*)
+   48    89    (*resume(move);*)
+   49    89  end;
+   50    90  
+   51    90  procedure bajar(voy:integer; id:integer);begin
+   52    90   (*resume(move);*)
+   53    90   delay(desmontar[voy]);
+   54    94   (*writeln('Tipo ',id,' esperando para desmontar');*)
+   55    94   (*delay(desmontar[voy]);*)
+   56    94   subidos := subidos - 1;
+   57    99   reclamado := reclamado - 1 ;
+   58   104   writeln('Tipo ',id,' llegó a piso ',altura,', iba al ',voy);
+   59   117   
+   60   117   (*if (subidos = 0) or empty(montar[voy]) then*)
+   61   117    resume(move);
+   62   119  end;
+   63   120  
+   64   120  procedure ir; 
+   65   120   var i,j:integer;
+   66   120  begin
+   67   120   for i:= 1 to 6 do begin
+   68   124    if not(llamadas[i] = 0) or not(demandas[i] = 0) then begin
+   69   140     writeln('Ascensor: ',altura,'->',i);
+   70   149     altura := i;
+   71   152     demandas[altura] := 0;
+   72   157     if subidos <> 0 then begin
+   73   161      writeln('Permitir salida (hay ',subidos,' subidos)');
+   74   168      for j:=0 to subidos do
+   75   172       resume(desmontar[altura]);
+   76   177      (*delay(move);*)
+   77   177     end;
+   78   177     llamadas[altura] := llamadas[altura] - (MAXP - subidos);
+   79   189     (*writeln('Permitir entrada');*)
+   80   189     (*for j:=subidos to MAXP do begin*)
+   81   189     (*while not (empty(montar[altura])) do;*)
+   82   189     repeat begin
+   83   189      writeln('Permitir entrada ',j);
+   84   194      resume(montar[altura]);
+   85   198      (*delay(move);*)
+   86   198     end;
+   87   198     until ((subidos = MAXP) or (empty(montar[altura])));
+   88   207     (*writeln('A la espera');
+   89   207     if (empty(montar[altura])) then
+   90   207      writeln('vacio!!! altura:',altura);*)
+   91   207     (*if (empty(montar[altura])) then*)
+   92   207      (*llamadas[altura] :=0;*)
+   93   207     (*delay(move);*)
+   94   207    end;
+   95   207   end;
+   96   208  end;
+   97   209  
+   98   209  procedure bloquear; 
+   99   209   var i,j:integer;
+  100   209  begin
+  101   209    if (reclamado = 0) then begin
+  102   213     writeln('2Ascensor parado ');
+  103   216     delay(move);
+  104   218     writeln('2Ascensor activado ');
+  105   221    end;
+  106   221  end;
+  107   222  
+  108   222  procedure llevar; 
+  109   222   var i,j:integer;
+  110   222  begin
+  111   222    if (reclamado = 0) then begin
+  112   226     writeln('2Ascensor parado ');
+  113   229     delay(move);
+  114   231     writeln('2Ascensor activado ');
+  115   234    end;
+  116   234   for i:= 1 to 6 do begin
+  117   238   (*writeln('i: ',i);*)
+  118   238 
+  119   238    if not(demandas[i] = 0) then begin
+  120   246     writeln('2Ascensor: ',altura,'->',i);
+  121   255     altura := i;
+  122   258     demandas[altura] := 0;
+  123   263     if subidos <> 0 then begin
+  124   267      writeln('Permitir salida (hay ',subidos,' subidos)');
+  125   274      for j:=0 to subidos do
+  126   278       resume(desmontar[altura]);
+  127   283      (*delay(move);*)
+  128   283     end;
+  129   283     repeat begin
+  130   283      writeln('Permitir entrada ',j);
+  131   288      resume(montar[altura]);
+  132   292      (*delay(move);*)
+  133   292     end;
+  134   292     until (empty(montar[altura]));
+  135   297     (*writeln('A la espera');*)
+  136   297     (*if (empty(montar[altura])) then*)
+  137   297      (*writeln('vacio!!! altura:',altura);*)
+  138   297     (*delay(move);*)
+  139   297     if (empty(montar[altura])) then
+  140   302      llamadas[altura] :=0;
+  141   307    end;
+  142   307   end;
+  143   308  end;
+  144   309  
+  145   309  begin
+  146   310   subidos := 0; altura:=0;
+  147   316   for k:=1 to PISOS do begin
+  148   320    llamadas[k] := 0; 
+  149   325    demandas[k] :=0;
+  150   330   end;
+  151   331  end;
+  152   332 
+  153   332 process type guy(id:integer); 
+  154   332  var estoy,voy : integer;
+  155   332 begin
+  156   332  (*while estoy = voy do; begin*)
+  157   332   estoy := random(PISOS-1)+1;
+  158   340   voy := random(5)+1;
+  159   346  (*end;*)
+  160   346  ctrl.llamar(estoy,voy,id);
+  161   354  ctrl.subir(estoy,voy,id);
+  162   362  (*ctrl.bajar(voy,id);*)
+  163   362 end;
+  164   363 
+  165   363 process type ascen(id:integer); begin
+  166   363  repeat
+  167   363   ctrl.bloquear;
+  168   368   ctrl.ir;
+  169   373   (*ctrl.llevar;*)
+  170   373  forever
+  171   374 end;
+  172   375 
+  173   375 var i:integer;
+  174   375 guys:array[1..7] of guy;
+  175   375 ascensor: ascen;
+  176   375 begin
+  177   376  cobegin
+  178   377   ascensor(42);
+  179   382   (*guys[1](1);*)
+  180   382   for i := 1 to 7 do
+  181   386    guys[i](i);
+  182   394  coend;
+  183   395 end.
+
+
+
+Symbol table
+
+    name       link      objekt       type         ref      nrm  lev  adr  aux
+
+ 45 _main        44     procedure   notyp           2      True    0  375    0
+ 46 any           0     variable    synch           0      True    1    5    0
+ 47 pisos        46     constant    integer         0     False    1    6    0
+ 48 ctrl         47     variable    monvar          3      True    1    5  309
+ 49 maxp          0     constant    integer         0     False    2    4    0
+ 50 subidos      49     variable    integer         0      True    1    7    0
+ 51 altura       50     variable    integer         0      True    1    8    0
+ 52 k            51     variable    integer         0      True    1    9    0
+ 53 reclamado    52     variable    integer         0      True    1   10    0
+ 54 move         53     variable    condition       0      True    1   11    0
+ 55 llamadas     54     variable    array           1      True    1   12    0
+ 56 demandas     55     variable    array           1      True    1   18    0
+ 57 montar       56     variable    array           2      True    1   24    0
+ 58 desmontar    57     variable    array           2      True    1   30    0
+ 59 llamar       58     monproc     notyp           4      True    2    0    0
+ 60 estoy         0     variable    integer         0      True    3    5    0
+ 61 voy          60     variable    integer         0      True    3    6    0
+ 62 id           61     variable    integer         0      True    3    7    0
+ 63 subir        59     monproc     notyp           5      True    2    1    0
+ 64 estoy         0     variable    integer         0      True    3    5    0
+ 65 voy          64     variable    integer         0      True    3    6    0
+ 66 id           65     variable    integer         0      True    3    7    0
+ 67 bajar        63     monproc     notyp           6      True    2   90    0
+ 68 voy           0     variable    integer         0      True    3    5    0
+ 69 id           68     variable    integer         0      True    3    6    0
+ 70 ir           67     monproc     notyp           7      True    2  120    0
+ 71 i             0     variable    integer         0      True    3    5    0
+ 72 j            71     variable    integer         0      True    3    6    0
+ 73 bloquear     70     monproc     notyp           8      True    2  209    0
+ 74 i             0     variable    integer         0      True    3    5    0
+ 75 j            74     variable    integer         0      True    3    6    0
+ 76 llevar       73     monproc     notyp           9      True    2  222    0
+ 77 i             0     variable    integer         0      True    3    5    0
+ 78 j            77     variable    integer         0      True    3    6    0
+ 79 guy          48     type id     process        10      True    1  332    0
+ 80 id            0     variable    integer         0      True    2    5    0
+ 81 estoy        80     variable    integer         0      True    2    6    0
+ 82 voy          81     variable    integer         0      True    2    7    0
+ 83 ascen        79     type id     process        11      True    1  363    0
+ 84 id            0     variable    integer         0      True    2    5    0
+ 85 i            83     variable    integer         0      True    1   36    0
+ 86 guys         85     variable    array           3      True    1   37    0
+ 87 ascensor     86     variable    process        11      True    1   44    0
+
+Generated P-code
+
+    0     rproc        0         0          ;24
+    1     ldcon.i      0         5          ;28
+    2     wrstr        0         0          ;28
+    3     ldval.i      3         7          ;28
+    4     wrval.i      0         0          ;28
+    5     ldcon.i      0        18          ;28
+    6     wrstr        0         5          ;28
+    7     ldval.i      3         5          ;28
+    8     wrval.i      0         0          ;28
+    9     ldcon.i      0        11          ;28
+   10     wrstr        0        23          ;28
+   11     ldval.i      3         6          ;28
+   12     wrval.i      0         0          ;28
+   13     wrlin        0         0          ;28
+   14     ldadr        1        12          ;28
+   15     ldval.i      3         5          ;29
+   16     ixary.i      0         1          ;29
+   17     ldadr        1        12          ;29
+   18     ldval.i      3         5          ;29
+   19     ixary.i      0         1          ;29
+   20     rpadr.i      0         0          ;29
+   21     ldcon.i      0         1          ;29
+   22     addop.i      0         0          ;29
+   23     store.i      0         0          ;29
+   24     ldadr        1        10          ;29
+   25     ldval.i      1        10          ;30
+   26     ldcon.i      0         1          ;30
+   27     addop.i      0         0          ;30
+   28     store.i      0         0          ;30
+   29     ldadr        1        11          ;31
+   30     resum        0         0          ;31
+   31     ldadr        1        24          ;32
+   32     ldval.i      3         5          ;32
+   33     ixary.i      0         2          ;32
+   34     delay        0         0          ;32
+   35     ldval.i      1         7          ;34
+   36     ldcon.i      0         4          ;34
+   37     rellt.i      0         0          ;34
+   38     jmpiz        0        62          ;34
+   39     ldadr        1         7          ;34
+   40     ldval.i      1         7          ;35
+   41     ldcon.i      0         1          ;35
+   42     addop.i      0         0          ;35
+   43     store.i      0         0          ;35
+   44     ldadr        1        18          ;35
+   45     ldval.i      3         6          ;36
+   46     ixary.i      0         1          ;36
+   47     ldcon.i      0         1          ;36
+   48     store.i      0         0          ;36
+   49     ldcon.i      0         5          ;37
+   50     wrstr        0        34          ;37
+   51     ldval.i      3         7          ;37
+   52     wrval.i      0         0          ;37
+   53     ldcon.i      0        19          ;37
+   54     wrstr        0        39          ;37
+   55     ldval.i      3         5          ;37
+   56     wrval.i      0         0          ;37
+   57     ldcon.i      0         5          ;37
+   58     wrstr        0        58          ;37
+   59     ldval.i      3         6          ;37
+   60     wrval.i      0         0          ;37
+   61     wrlin        0         0          ;37
+   62     ldadr        1        30          ;41
+   63     ldval.i      3         6          ;41
+   64     ixary.i      0         2          ;41
+   65     delay        0         0          ;41
+   66     ldadr        1         7          ;41
+   67     ldval.i      1         7          ;43
+   68     ldcon.i      0         1          ;43
+   69     subop.i      0         0          ;43
+   70     store.i      0         0          ;43
+   71     ldadr        1        10          ;43
+   72     ldval.i      1        10          ;44
+   73     ldcon.i      0         1          ;44
+   74     subop.i      0         0          ;44
+   75     store.i      0         0          ;44
+   76     ldcon.i      0         5          ;45
+   77     wrstr        0        63          ;45
+   78     ldval.i      3         7          ;45
+   79     wrval.i      0         0          ;45
+   80     ldcon.i      0        14          ;45
+   81     wrstr        0        68          ;45
+   82     ldval.i      1         8          ;45
+   83     wrval.i      0         0          ;45
+   84     ldcon.i      0         9          ;45
+   85     wrstr        0        82          ;45
+   86     ldval.i      3         6          ;45
+   87     wrval.i      0         0          ;45
+   88     wrlin        0         0          ;45
+   89     rproc        0         0          ;45
+   90     ldadr        1        30          ;53
+   91     ldval.i      3         5          ;53
+   92     ixary.i      0         2          ;53
+   93     delay        0         0          ;53
+   94     ldadr        1         7          ;53
+   95     ldval.i      1         7          ;56
+   96     ldcon.i      0         1          ;56
+   97     subop.i      0         0          ;56
+   98     store.i      0         0          ;56
+   99     ldadr        1        10          ;56
+  100     ldval.i      1        10          ;57
+  101     ldcon.i      0         1          ;57
+  102     subop.i      0         0          ;57
+  103     store.i      0         0          ;57
+  104     ldcon.i      0         5          ;58
+  105     wrstr        0        91          ;58
+  106     ldval.i      3         6          ;58
+  107     wrval.i      0         0          ;58
+  108     ldcon.i      0        14          ;58
+  109     wrstr        0        96          ;58
+  110     ldval.i      1         8          ;58
+  111     wrval.i      0         0          ;58
+  112     ldcon.i      0         9          ;58
+  113     wrstr        0       110          ;58
+  114     ldval.i      3         5          ;58
+  115     wrval.i      0         0          ;58
+  116     wrlin        0         0          ;58
+  117     ldadr        1        11          ;61
+  118     resum        0         0          ;61
+  119     rproc        0         0          ;61
+  120     ldadr        3         5          ;66
+  121     ldcon.i      0         1          ;67
+  122     ldcon.i      0         6          ;67
+  123     for1u.i      0       208          ;67
+  124     ldadr        1        12          ;68
+  125     ldval.i      3         5          ;68
+  126     ixary.i      0         1          ;68
+  127     rpadr.i      0         0          ;68
+  128     ldcon.i      0         0          ;68
+  129     releq.i      0         0          ;68
+  130     notop.b      0         0          ;68
+  131     ldadr        1        18          ;68
+  132     ldval.i      3         5          ;68
+  133     ixary.i      0         1          ;68
+  134     rpadr.i      0         0          ;68
+  135     ldcon.i      0         0          ;68
+  136     releq.i      0         0          ;68
+  137     notop.b      0         0          ;68
+  138     iorop.b      0         0          ;68
+  139     jmpiz        0       207          ;68
+  140     ldcon.i      0        10          ;69
+  141     wrstr        0       119          ;69
+  142     ldval.i      1         8          ;69
+  143     wrval.i      0         0          ;69
+  144     ldcon.i      0         2          ;69
+  145     wrstr        0       129          ;69
+  146     ldval.i      3         5          ;69
+  147     wrval.i      0         0          ;69
+  148     wrlin        0         0          ;69
+  149     ldadr        1         8          ;69
+  150     ldval.i      3         5          ;70
+  151     store.i      0         0          ;70
+  152     ldadr        1        18          ;70
+  153     ldval.i      1         8          ;71
+  154     ixary.i      0         1          ;71
+  155     ldcon.i      0         0          ;71
+  156     store.i      0         0          ;71
+  157     ldval.i      1         7          ;72
+  158     ldcon.i      0         0          ;72
+  159     relne.i      0         0          ;72
+  160     jmpiz        0       177          ;72
+  161     ldcon.i      0        21          ;73
+  162     wrstr        0       131          ;73
+  163     ldval.i      1         7          ;73
+  164     wrval.i      0         0          ;73
+  165     ldcon.i      0         9          ;73
+  166     wrstr        0       152          ;73
+  167     wrlin        0         0          ;73
+  168     ldadr        3         6          ;73
+  169     ldcon.i      0         0          ;74
+  170     ldval.i      1         7          ;74
+  171     for1u.i      0       177          ;74
+  172     ldadr        1        30          ;75
+  173     ldval.i      1         8          ;75
+  174     ixary.i      0         2          ;75
+  175     resum        0         0          ;75
+  176     for2u.i      0       172          ;75
+  177     ldadr        1        12          ;77
+  178     ldval.i      1         8          ;78
+  179     ixary.i      0         1          ;78
+  180     ldadr        1        12          ;78
+  181     ldval.i      1         8          ;78
+  182     ixary.i      0         1          ;78
+  183     rpadr.i      0         0          ;78
+  184     ldcon.i      0         4          ;78
+  185     ldval.i      1         7          ;78
+  186     subop.i      0         0          ;78
+  187     subop.i      0         0          ;78
+  188     store.i      0         0          ;78
+  189     ldcon.i      0        17          ;83
+  190     wrstr        0       161          ;83
+  191     ldval.i      3         6          ;83
+  192     wrval.i      0         0          ;83
+  193     wrlin        0         0          ;83
+  194     ldadr        1        24          ;84
+  195     ldval.i      1         8          ;84
+  196     ixary.i      0         2          ;84
+  197     resum        0         0          ;84
+  198     ldval.i      1         7          ;87
+  199     ldcon.i      0         4          ;87
+  200     releq.i      0         0          ;87
+  201     ldadr        1        24          ;87
+  202     ldval.i      1         8          ;87
+  203     ixary.i      0         2          ;87
+  204     stfun.b      0        20          ;87
+  205     iorop.b      0         0          ;87
+  206     jmpiz        0       189          ;87
+  207     for2u.i      0       124          ;94
+  208     rproc        0         0          ;95
+  209     ldval.i      1        10          ;101
+  210     ldcon.i      0         0          ;101
+  211     releq.i      0         0          ;101
+  212     jmpiz        0       221          ;101
+  213     ldcon.i      0        17          ;102
+  214     wrstr        0       178          ;102
+  215     wrlin        0         0          ;102
+  216     ldadr        1        11          ;103
+  217     delay        0         0          ;103
+  218     ldcon.i      0        19          ;104
+  219     wrstr        0       195          ;104
+  220     wrlin        0         0          ;104
+  221     rproc        0         0          ;105
+  222     ldval.i      1        10          ;111
+  223     ldcon.i      0         0          ;111
+  224     releq.i      0         0          ;111
+  225     jmpiz        0       234          ;111
+  226     ldcon.i      0        17          ;112
+  227     wrstr        0       214          ;112
+  228     wrlin        0         0          ;112
+  229     ldadr        1        11          ;113
+  230     delay        0         0          ;113
+  231     ldcon.i      0        19          ;114
+  232     wrstr        0       231          ;114
+  233     wrlin        0         0          ;114
+  234     ldadr        3         5          ;115
+  235     ldcon.i      0         1          ;116
+  236     ldcon.i      0         6          ;116
+  237     for1u.i      0       308          ;116
+  238     ldadr        1        18          ;119
+  239     ldval.i      3         5          ;119
+  240     ixary.i      0         1          ;119
+  241     rpadr.i      0         0          ;119
+  242     ldcon.i      0         0          ;119
+  243     releq.i      0         0          ;119
+  244     notop.b      0         0          ;119
+  245     jmpiz        0       307          ;119
+  246     ldcon.i      0        11          ;120
+  247     wrstr        0       250          ;120
+  248     ldval.i      1         8          ;120
+  249     wrval.i      0         0          ;120
+  250     ldcon.i      0         2          ;120
+  251     wrstr        0       261          ;120
+  252     ldval.i      3         5          ;120
+  253     wrval.i      0         0          ;120
+  254     wrlin        0         0          ;120
+  255     ldadr        1         8          ;120
+  256     ldval.i      3         5          ;121
+  257     store.i      0         0          ;121
+  258     ldadr        1        18          ;121
+  259     ldval.i      1         8          ;122
+  260     ixary.i      0         1          ;122
+  261     ldcon.i      0         0          ;122
+  262     store.i      0         0          ;122
+  263     ldval.i      1         7          ;123
+  264     ldcon.i      0         0          ;123
+  265     relne.i      0         0          ;123
+  266     jmpiz        0       283          ;123
+  267     ldcon.i      0        21          ;124
+  268     wrstr        0       263          ;124
+  269     ldval.i      1         7          ;124
+  270     wrval.i      0         0          ;124
+  271     ldcon.i      0         9          ;124
+  272     wrstr        0       284          ;124
+  273     wrlin        0         0          ;124
+  274     ldadr        3         6          ;124
+  275     ldcon.i      0         0          ;125
+  276     ldval.i      1         7          ;125
+  277     for1u.i      0       283          ;125
+  278     ldadr        1        30          ;126
+  279     ldval.i      1         8          ;126
+  280     ixary.i      0         2          ;126
+  281     resum        0         0          ;126
+  282     for2u.i      0       278          ;126
+  283     ldcon.i      0        17          ;130
+  284     wrstr        0       293          ;130
+  285     ldval.i      3         6          ;130
+  286     wrval.i      0         0          ;130
+  287     wrlin        0         0          ;130
+  288     ldadr        1        24          ;131
+  289     ldval.i      1         8          ;131
+  290     ixary.i      0         2          ;131
+  291     resum        0         0          ;131
+  292     ldadr        1        24          ;134
+  293     ldval.i      1         8          ;134
+  294     ixary.i      0         2          ;134
+  295     stfun.b      0        20          ;134
+  296     jmpiz        0       283          ;134
+  297     ldadr        1        24          ;139
+  298     ldval.i      1         8          ;139
+  299     ixary.i      0         2          ;139
+  300     stfun.b      0        20          ;139
+  301     jmpiz        0       307          ;139
+  302     ldadr        1        12          ;139
+  303     ldval.i      1         8          ;140
+  304     ixary.i      0         1          ;140
+  305     ldcon.i      0         0          ;140
+  306     store.i      0         0          ;140
+  307     for2u.i      0       238          ;141
+  308     rproc        0         0          ;142
+  309     prsel        0         0          ;143
+  310     ldadr        1         7          ;145
+  311     ldcon.i      0         0          ;146
+  312     store.i      0         0          ;146
+  313     ldadr        1         8          ;146
+  314     ldcon.i      0         0          ;146
+  315     store.i      0         0          ;146
+  316     ldadr        1         9          ;146
+  317     ldcon.i      0         1          ;147
+  318     ldcon.i      0         6          ;147
+  319     for1u.i      0       331          ;147
+  320     ldadr        1        12          ;147
+  321     ldval.i      1         9          ;148
+  322     ixary.i      0         1          ;148
+  323     ldcon.i      0         0          ;148
+  324     store.i      0         0          ;148
+  325     ldadr        1        18          ;148
+  326     ldval.i      1         9          ;149
+  327     ixary.i      0         1          ;149
+  328     ldcon.i      0         0          ;149
+  329     store.i      0         0          ;149
+  330     for2u.i      0       320          ;149
+  331     mretn        0         0          ;150
+  332     ldadr        2         6          ;155
+  333     ldcon.i      0         6          ;157
+  334     ldcon.i      0         1          ;157
+  335     subop.i      0         0          ;157
+  336     stfun.i      0        19          ;157
+  337     ldcon.i      0         1          ;157
+  338     addop.i      0         0          ;157
+  339     store.i      0         0          ;157
+  340     ldadr        2         7          ;157
+  341     ldcon.i      0         5          ;158
+  342     stfun.i      0        19          ;158
+  343     ldcon.i      0         1          ;158
+  344     addop.i      0         0          ;158
+  345     store.i      0         0          ;158
+  346     ldadr        1         5          ;160
+  347     enmon        0         0          ;160
+  348     mkstk        0        59          ;160
+  349     ldval.i      2         6          ;160
+  350     ldval.i      2         7          ;160
+  351     ldval.i      2         5          ;160
+  352     calls        0         7          ;160
+  353     exmon        0         0          ;160
+  354     ldadr        1         5          ;161
+  355     enmon        0         0          ;161
+  356     mkstk        0        63          ;161
+  357     ldval.i      2         6          ;161
+  358     ldval.i      2         7          ;161
+  359     ldval.i      2         5          ;161
+  360     calls        0         7          ;161
+  361     exmon        0         0          ;161
+  362     rproc        1         0          ;161
+  363     ldadr        1         5          ;167
+  364     enmon        0         0          ;167
+  365     mkstk        0        73          ;167
+  366     calls        0         4          ;167
+  367     exmon        0         0          ;167
+  368     ldadr        1         5          ;168
+  369     enmon        0         0          ;168
+  370     mkstk        0        70          ;168
+  371     calls        0         4          ;168
+  372     exmon        0         0          ;168
+  373     jmpuc        0       363          ;168
+  374     rproc        1         0          ;170
+  375     mexec        0       310          ;175
+  376     cobeg        0         0          ;175
+  377     mkstk        1        83          ;177
+  378     ldadr        1        44          ;177
+  379     procv        0         0          ;177
+  380     ldcon.i      0        42          ;178
+  381     calls        1         5          ;178
+  382     ldadr        1        36          ;178
+  383     ldcon.i      0         1          ;180
+  384     ldcon.i      0         7          ;180
+  385     for1u.i      0       394          ;180
+  386     mkstk        1        79          ;180
+  387     ldadr        1        37          ;180
+  388     ldval.i      1        36          ;181
+  389     ixary.i      0         3          ;181
+  390     procv        0         0          ;181
+  391     ldval.i      1        36          ;181
+  392     calls        1         5          ;181
+  393     for2u.i      0       386          ;181
+  394     coend        0         0          ;181
+  395     stopx        0         0          ;182

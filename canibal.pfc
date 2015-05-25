@@ -1,0 +1,62 @@
+program canibal;(*MisioneroCanales*)
+
+const MAXC = 10;
+		NPORC = 3;
+		
+var comer : array [1..MAXC] of channel of synchronous;
+	repone: channel of synchronous;
+	
+process type Tcanibal(id: integer);
+	begin
+		repeat
+			comer[id] ! any;
+			WriteLN('canibal ... ',id,' comiendo');
+		forever;
+	end;
+	
+process cocinero;
+	begin
+		repeat
+			repone ? any;
+			WriteLN('Cocinero repone');
+			sleep(10);
+		forever;
+	end;
+
+process marmita;
+	var n,porciones : integer;
+	begin
+		porciones := 0;
+	repeat
+		pri select
+			for n:=1 to MAXC replicate
+				when porciones >0 =>
+					comer[n] ? any;
+					porciones := porciones -1;
+		or
+			when porciones = 0 =>
+				repone ! any;
+				porciones := NPORC;
+		end;(*select*)
+	forever;
+end;
+
+var 
+canib: array [1..MAXC] of Tcanibal;
+i,j: integer;
+
+begin
+
+	(*initial(mutex,1);*)
+	cobegin
+		Cocinero;
+		Marmita;
+		for i:=1 to MAXC do
+			canib[i](i);
+	coend;
+end.
+
+
+canibales
+cocinero
+marmita

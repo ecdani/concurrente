@@ -1,0 +1,84 @@
+(***********************************)
+(*   EJERCICIO TÚNEL 28/04/2015    *)
+(*   JOSÉ ANTONIO RIAZA VALVERDE   *)
+(*   DANIEL ESPINOSA CUEVAS        *)
+(***********************************)
+
+PROGRAM tunel;
+
+CONST
+	MAXCOCHES = 20;		(* Número de coches que pasarán por la carretera *)
+	MAXDIRECCIONES = 2;	(* Número de direcciones por donde puede venir el coche *)
+	MAXTUNEL = 3;		(* Número de coches máximo que pueden cruzar en un dirección si hay otros esperando *)
+
+MONITOR control;
+	EXPORT llegada, entrada, salida;
+	VAR
+		tunel : CONDITION;
+		i : INTEGER;									(* Bucles *)
+		ncoches : ARRAY [1..MAXDIRECCIONES] OF INTEGER;	(* Número de coches esperando en las direcciones *)
+		ntunel : INTEGER;								(* Número de coches cruzando el túnel *)
+		dtunel : INTEGER;								(* Dirección de los coches que están cruzando el túnel *)
+		ndtunel : INTEGER;								(* Número de coches que han cruza el túnel en una dirección *)
+
+	PROCEDURE llegada (id : INTEGER; direccion : INTEGER); BEGIN
+		ncoches[direccion] := ncoches[direccion] + 1; (* Incrementar número de coches esperando en dirección $direccion *)
+		(* Imprimir por pantalla la llegada del coche $id por la dirección $direccion *)
+		writeln('LLEGADA (id: ', id, ', dir: ', direccion, ') - El coche ', id, ' está esperando en dirección ', direccion);
+	END;
+
+	PROCEDURE entrada (id : INTEGER; direccion : INTEGER); BEGIN
+		(* Si los coches que están cruzando no van en el mismo sentido 
+		   o van en el mismo sentido pero se ha sobrepasado el máximo *)
+		IF (NOT(ntunel = 0) AND ( 
+									(NOT(direccion = dtunel) AND (NOT(dtunel = 0))) 
+									OR
+									((MAXTUNEL = ndtunel) AND(direccion = dtunel) AND NOT(empty(tunel))) 
+									)) THEN 
+			delay(tunel);
+
+		IF (NOT(direccion = dtunel)) THEN BEGIN (* Si ha cambiado la dirección *)
+			ndtunel := 0; (* Reiniciar contador *)
+			dtunel := direccion; (* Cambiar dirección *)
+		END;
+		ntunel := ntunel + 1; (* Incrementar número de coches cruzando el túnel *)
+		writeln('ENTRADA (id: ', id, ', dir: ', direccion, ') - El coche ', id, ' entra desde dirección ', direccion);
+		ncoches[direccion] := ncoches[direccion] - 1; (* Decrementar coches en espera en dirección $direccion *)
+		sleep(1+random(3));
+	END;
+
+	PROCEDURE salida (id : INTEGER; direccion : INTEGER); BEGIN
+		writeln('SALIDA  (id: ', id, ', dir: ', direccion, ') - El coche ', id, ' sale desde dirección ', direccion);
+		(* Incrementar número de coches que han pasado seguidos en esa dirección *)
+		ndtunel := ndtunel + 1;
+		(* Decrementar número de coches cruzando el túnel *)
+		ntunel := ntunel - 1;
+		(* Si no quedan coches en el tunel, liberar *)
+		IF (ntunel = 0) THEN resume(tunel);
+	END;
+	
+BEGIN
+	FOR i := 1 TO MAXDIRECCIONES DO ncoches[i] := 0;
+	ntunel := 0;
+	ndtunel := 0;
+	dtunel := 0;
+END;
+
+PROCESS TYPE coche (id : INTEGER; direccion : INTEGER); BEGIN
+	sleep(1+random(10)); (* Dormir proceso un tiempo aleatorio *)
+	control.llegada(id, direccion);
+	control.entrada(id, direccion);
+	control.salida(id, direccion);
+END;
+
+(* PROGRAMA *)
+VAR
+	i : INTEGER;
+	coches : ARRAY [1..MAXCOCHES] OF coche;
+
+BEGIN
+	COBEGIN
+		(* Iterar e iniciar los procesos de coches *)
+        FOR i := 1 TO MAXCOCHES DO coches[i](i, 1 + round(random(MAXDIRECCIONES - 1)));
+    COEND;
+END.

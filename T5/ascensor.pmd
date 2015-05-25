@@ -1,0 +1,70 @@
+Pascal-FC post-mortem report on ascensor
+- Interpreter Version P5.3 - 
+Abnormal halt in process ascensor with pc = 218
+Reason:   deadlock
+
+
+----------
+Main program
+
+Status:  awaiting process termination
+
+
+----------
+Process ascensor
+
+Status:  active
+pc = 218
+
+Process suspended on:
+
+ctrl.move (condition)
+
+
+----------
+Process guys[1]
+
+Status:  terminated
+
+
+----------
+Process guys[2]
+
+Status:  terminated
+
+
+----------
+Process guys[3]
+
+Status:  terminated
+
+
+----------
+Process guys[4]
+
+Status:  terminated
+
+
+----------
+Process guys[5]
+
+Status:  terminated
+
+
+----------
+Process guys[6]
+
+Status:  terminated
+
+
+----------
+Process guys[7]
+
+Status:  terminated
+
+
+
+==========
+Global variables
+
+i          = 7

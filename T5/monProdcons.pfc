@@ -1,0 +1,53 @@
+(*Productor/Consumidor con monitores, correcto, preExamen*)
+program monProdcons;
+
+monitor tBuffer;
+	export insertar, extraer;
+	const N=10;
+	var ocup,frente,cola : integer;
+	lleno,vacio: condition;
+	recurso: array [0..N] of integer;
+
+	procedure insertar (item: integer; id: integer);
+	begin
+		if ocup=N then delay(lleno);
+		writeln('Process prod ',id,' inserting ',item);
+		recurso[cola]:= item;
+		cola:=(cola+1) mod N;
+		ocup:=ocup+1;
+		resume(vacio);
+	end;
+	procedure extraer(id: integer);
+	begin
+		if ocup=0 then delay(vacio);
+		writeln('Process cons ',id,' extracting ',recurso[frente]);
+		frente:=(frente+1) mod N;
+		ocup:=ocup-1;
+		resume(lleno);
+	end;
+begin
+	frente:=0;
+	cola:=0;
+	ocup:=0;
+end;
+
+process type cons(id:integer); begin
+	tBuffer.extraer(id);
+end;
+
+process type prod(id:integer); begin
+	tBuffer.insertar(random(50),id);
+end;
+
+var
+	i:integer;
+	prods:array [1..5] of prod;
+	conss:array [1..3] of cons;
+begin
+	cobegin
+		for i:=1 to 5 do
+			prods[i](i);
+		for i:=1 to 3 do
+			conss[i](i);
+	coend;
+end.

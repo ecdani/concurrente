@@ -1,0 +1,265 @@
+- Pascal-FC for IBM PC compatibles - 
+- GNU Compiler Version P5.2
+
+G L Davies  &  A Burns, University of York
+
+Compiler listing
+
+    1     0 program tAsc;
+    2     0 CONST cap=1;
+    3     0 CONST bajo=0;
+    4     0 CONST azotea=6;
+    5     0 
+    6     0 monitor controlAscensor;
+    7     0  export intentarEntrar,moverse, intentarBajar;
+    8     0  (*Al detectar error de recurso/metodo no exportado, comprobar nombres de metodos*)
+    9     0  var 
+   10     0  pisos : array[bajo..azotea] of condition;
+   11     0  ascensor : condition;
+   12     0  sentido:boolean;
+   13     0  ocup, pisoActual:integer;
+   14     0  
+   15     0  procedure intentarEntrar(origen:integer);
+   16     0  begin
+   17     0  while ((pisoActual <> origen) or  (ocup = cap)) do (*no podremos subir cuando no este o cuando este lleno*)
+   18     8  begin
+   19     8   writeln('No ha llegado o está lleno');
+   20    11   delay(pisos[origen]); (*Estamos parados a la cola de nuestro piso*)
+   21    15  end;
+   22    16  ocup:=ocup+1;
+   23    21  writeln('Subo al ascensor en ',origen);
+   24    26  end;
+   25    27  
+   26    27  procedure intentarBajar(destino:integer);
+   27    27  begin
+   28    27  while (pisoActual <> destino) do 
+   29    31  begin
+   30    31   delay(ascensor);
+   31    33  end;
+   32    34  ocup:=ocup-1;
+   33    39  writeln('Bajo del ascensor en ',destino);
+   34    44  
+   35    44  end;
+   36    45  
+   37    45  procedure moverse;
+   38    45  begin
+   39    45  if (pisoActual = azotea) then sentido:=false;
+   40    52  
+   41    52  if (pisoActual = bajo) then sentido:=true;
+   42    59  
+   43    59  if(sentido)then 
+   44    61  begin
+   45    61  pisoActual:=pisoActual+1;
+   46    66  end
+   47    66  else pisoActual:=pisoActual-1; 
+   48    72  writeln('Estamos en ',pisoActual);
+   49    77  resume(ascensor); (*En cada piso 'despertamos' a la gente del ascensor y de ese piso para ver 
+   50    79  si quieren subir o si quieren bajar*)
+   51    79  resume(pisos[pisoActual]);
+   52    83  end;
+   53    84  
+   54    84  begin {Cuerpo monitor}
+   55    85  ocup:=0;
+   56    88  sentido:=true;
+   57    91  pisoActual:=0; 
+   58    94  end;
+   59    95 
+   60    95 process type Ascensor;
+   61    95 begin
+   62    95  repeat
+   63    95  controlAscensor.moverse;
+   64   100  forever;
+   65   101 end;
+   66   102  
+   67   102 process type Persona(origen, destino : integer);
+   68   102 begin
+   69   102 controlAscensor.intentarEntrar(origen);
+   70   108 controlAscensor.intentarBajar(destino);
+   71   114 end;
+   72   115 
+   73   115 var 
+   74   115 p1,p2,p3:Persona;
+   75   115 as:Ascensor;
+   76   115 begin
+   77   116 cobegin
+   78   117 as;
+   79   121 p1(2,4);
+   80   127 p2(0,6);
+   81   133 p3(1,5);
+   82   139 coend;
+   83   140 end.
+
+
+
+Symbol table
+
+    name       link      objekt       type         ref      nrm  lev  adr  aux
+
+ 45 _main        44     procedure   notyp           2      True    0  115    0
+ 46 any           0     variable    synch           0      True    1    5    0
+ 47 cap          46     constant    integer         0     False    1    1    0
+ 48 bajo         47     constant    integer         0     False    1    0    0
+ 49 azotea       48     constant    integer         0     False    1    6    0
+ 50 controlasc   49     variable    monvar          3      True    1    5   84
+ 51 pisos         0     variable    array           1      True    1    7    0
+ 52 ascensor     51     variable    condition       0      True    1   14    0
+ 53 sentido      52     variable    boolean         0      True    1   15    0
+ 54 ocup         53     variable    integer         0      True    1   16    0
+ 55 pisoactual   54     variable    integer         0      True    1   17    0
+ 56 intentaren   55     monproc     notyp           4      True    2    0    0
+ 57 origen        0     variable    integer         0      True    3    5    0
+ 58 intentarba   56     monproc     notyp           5      True    2   27    0
+ 59 destino       0     variable    integer         0      True    3    5    0
+ 60 moverse      58     monproc     notyp           6      True    2   45    0
+ 61 ascensor     50     type id     process         7      True    1   95    0
+ 62 persona      61     type id     process         8      True    1  102    0
+ 63 origen        0     variable    integer         0      True    2    5    0
+ 64 destino      63     variable    integer         0      True    2    6    0
+ 65 p1           62     variable    process         8      True    1   18    0
+ 66 p2           65     variable    process         8      True    1   19    0
+ 67 p3           66     variable    process         8      True    1   20    0
+ 68 as           67     variable    process         7      True    1   21    0
+
+Generated P-code
+
+    0     ldval.i      1        17          ;17
+    1     ldval.i      3         5          ;17
+    2     relne.i      0         0          ;17
+    3     ldval.i      1        16          ;17
+    4     ldcon.i      0         1          ;17
+    5     releq.i      0         0          ;17
+    6     iorop.b      0         0          ;17
+    7     jmpiz        0        16          ;17
+    8     ldcon.i      0        26          ;19
+    9     wrstr        0         0          ;19
+   10     wrlin        0         0          ;19
+   11     ldadr        1         7          ;20
+   12     ldval.i      3         5          ;20
+   13     ixary.i      0         1          ;20
+   14     delay        0         0          ;20
+   15     jmpuc        0         0          ;20
+   16     ldadr        1        16          ;21
+   17     ldval.i      1        16          ;22
+   18     ldcon.i      0         1          ;22
+   19     addop.i      0         0          ;22
+   20     store.i      0         0          ;22
+   21     ldcon.i      0        20          ;23
+   22     wrstr        0        26          ;23
+   23     ldval.i      3         5          ;23
+   24     wrval.i      0         0          ;23
+   25     wrlin        0         0          ;23
+   26     rproc        0         0          ;23
+   27     ldval.i      1        17          ;28
+   28     ldval.i      3         5          ;28
+   29     relne.i      0         0          ;28
+   30     jmpiz        0        34          ;28
+   31     ldadr        1        14          ;30
+   32     delay        0         0          ;30
+   33     jmpuc        0        27          ;30
+   34     ldadr        1        16          ;31
+   35     ldval.i      1        16          ;32
+   36     ldcon.i      0         1          ;32
+   37     subop.i      0         0          ;32
+   38     store.i      0         0          ;32
+   39     ldcon.i      0        21          ;33
+   40     wrstr        0        46          ;33
+   41     ldval.i      3         5          ;33
+   42     wrval.i      0         0          ;33
+   43     wrlin        0         0          ;33
+   44     rproc        0         0          ;33
+   45     ldval.i      1        17          ;39
+   46     ldcon.i      0         6          ;39
+   47     releq.i      0         0          ;39
+   48     jmpiz        0        52          ;39
+   49     ldadr        1        15          ;39
+   50     ldcon.b      0         0          ;39
+   51     store.b      0         0          ;39
+   52     ldval.i      1        17          ;41
+   53     ldcon.i      0         0          ;41
+   54     releq.i      0         0          ;41
+   55     jmpiz        0        59          ;41
+   56     ldadr        1        15          ;41
+   57     ldcon.b      0         1          ;41
+   58     store.b      0         0          ;41
+   59     ldval.b      1        15          ;43
+   60     jmpiz        0        67          ;43
+   61     ldadr        1        17          ;44
+   62     ldval.i      1        17          ;45
+   63     ldcon.i      0         1          ;45
+   64     addop.i      0         0          ;45
+   65     store.i      0         0          ;45
+   66     jmpuc        0        72          ;46
+   67     ldadr        1        17          ;47
+   68     ldval.i      1        17          ;47
+   69     ldcon.i      0         1          ;47
+   70     subop.i      0         0          ;47
+   71     store.i      0         0          ;47
+   72     ldcon.i      0        11          ;48
+   73     wrstr        0        67          ;48
+   74     ldval.i      1        17          ;48
+   75     wrval.i      0         0          ;48
+   76     wrlin        0         0          ;48
+   77     ldadr        1        14          ;49
+   78     resum        0         0          ;49
+   79     ldadr        1         7          ;51
+   80     ldval.i      1        17          ;51
+   81     ixary.i      0         1          ;51
+   82     resum        0         0          ;51
+   83     rproc        0         0          ;51
+   84     prsel        0         0          ;52
+   85     ldadr        1        16          ;54
+   86     ldcon.i      0         0          ;55
+   87     store.i      0         0          ;55
+   88     ldadr        1        15          ;55
+   89     ldcon.b      0         1          ;56
+   90     store.b      0         0          ;56
+   91     ldadr        1        17          ;56
+   92     ldcon.i      0         0          ;57
+   93     store.i      0         0          ;57
+   94     mretn        0         0          ;57
+   95     ldadr        1         5          ;63
+   96     enmon        0         0          ;63
+   97     mkstk        0        60          ;63
+   98     calls        0         4          ;63
+   99     exmon        0         0          ;63
+  100     jmpuc        0        95          ;63
+  101     rproc        1         0          ;64
+  102     ldadr        1         5          ;69
+  103     enmon        0         0          ;69
+  104     mkstk        0        56          ;69
+  105     ldval.i      2         5          ;69
+  106     calls        0         5          ;69
+  107     exmon        0         0          ;69
+  108     ldadr        1         5          ;70
+  109     enmon        0         0          ;70
+  110     mkstk        0        58          ;70
+  111     ldval.i      2         6          ;70
+  112     calls        0         5          ;70
+  113     exmon        0         0          ;70
+  114     rproc        1         0          ;70
+  115     mexec        0        85          ;75
+  116     cobeg        0         0          ;75
+  117     mkstk        1        61          ;77
+  118     ldadr        1        21          ;77
+  119     procv        0         0          ;77
+  120     calls        1         4          ;77
+  121     mkstk        1        62          ;78
+  122     ldadr        1        18          ;78
+  123     procv        0         0          ;78
+  124     ldcon.i      0         2          ;79
+  125     ldcon.i      0         4          ;79
+  126     calls        1         6          ;79
+  127     mkstk        1        62          ;79
+  128     ldadr        1        19          ;79
+  129     procv        0         0          ;79
+  130     ldcon.i      0         0          ;80
+  131     ldcon.i      0         6          ;80
+  132     calls        1         6          ;80
+  133     mkstk        1        62          ;80
+  134     ldadr        1        20          ;80
+  135     procv        0         0          ;80
+  136     ldcon.i      0         1          ;81
+  137     ldcon.i      0         5          ;81
+  138     calls        1         6          ;81
+  139     coend        0         0          ;81
+  140     stopx        0         0          ;82

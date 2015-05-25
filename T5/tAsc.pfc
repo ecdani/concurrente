@@ -1,0 +1,83 @@
+program tAsc;
+CONST cap=1;
+CONST bajo=0;
+CONST azotea=6;
+
+monitor controlAscensor;
+	export intentarEntrar,moverse, intentarBajar;
+	(*Al detectar error de recurso/metodo no exportado, comprobar nombres de metodos*)
+	var 
+	pisos : array[bajo..azotea] of condition;
+	ascensor : condition;
+	sentido:boolean;
+	ocup, pisoActual:integer;
+	
+	procedure intentarEntrar(origen:integer);
+	begin
+	while ((pisoActual <> origen) or  (ocup = cap)) do (*no podremos subir cuando no este o cuando este lleno*)
+	begin
+		writeln('No ha llegado o está lleno');
+		delay(pisos[origen]); (*Estamos parados a la cola de nuestro piso*)
+	end;
+	ocup:=ocup+1;
+	writeln('Subo al ascensor en ',origen);
+	end;
+	
+	procedure intentarBajar(destino:integer);
+	begin
+	while (pisoActual <> destino) do 
+	begin
+	 delay(ascensor);
+	end;
+	ocup:=ocup-1;
+	writeln('Bajo del ascensor en ',destino);
+	
+	end;
+	
+	procedure moverse;
+	begin
+	if (pisoActual = azotea) then sentido:=false;
+	
+	if (pisoActual = bajo) then sentido:=true;
+	
+	if(sentido)then 
+	begin
+	pisoActual:=pisoActual+1;
+	end
+	else pisoActual:=pisoActual-1;	
+	writeln('Estamos en ',pisoActual);
+	resume(ascensor); (*En cada piso 'despertamos' a la gente del ascensor y de ese piso para ver 
+	si quieren subir o si quieren bajar*)
+	resume(pisos[pisoActual]);
+	end;
+	
+	begin {Cuerpo monitor}
+	ocup:=0;
+	sentido:=true;
+	pisoActual:=0; 
+	end;
+
+process type Ascensor;
+begin
+ repeat
+ controlAscensor.moverse;
+ forever;
+end;
+	
+process type Persona(origen, destino : integer);
+begin
+controlAscensor.intentarEntrar(origen);
+controlAscensor.intentarBajar(destino);
+end;
+
+var 
+p1,p2,p3:Persona;
+as:Ascensor;
+begin
+cobegin
+as;
+p1(2,4);
+p2(0,6);
+p3(1,5);
+coend;
+end.
